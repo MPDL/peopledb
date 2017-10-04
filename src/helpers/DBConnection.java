@@ -11,7 +11,7 @@ public class DBConnection {
 	public static Connection getConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("org.postgresql.Driver");
 		Connection connection = null;
-		connection = DriverManager.getConnection("jdbc:postgresql://vm28.mpdl.mpg.de/people", System.getenv("peopleDBName"), System.getenv("peopleDBPassword"));
+		connection = DriverManager.getConnection("jdbc:postgresql://vm28.mpdl.mpg.de/people", System.getProperty("peopleDBName"), System.getProperty("peopleDBPassword"));
 		
 		return connection;
 	}

@@ -20,7 +20,7 @@ public class EmailDispatcherServlet extends HttpServlet {
 
 	String senderEmail = "mpdl_employee_database@mpdl.mpg.de";
 	String username = "MUCAM\\apetrova";
-	String password = System.getenv("emailpw");
+	String password = System.getProperty("emailpw");
 	LinkedList<String> recipients = new LinkedList<>();
 	String host = "mail.mucam.mpg.de";
 	String port = "25";
