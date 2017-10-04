@@ -32,7 +32,7 @@ public class NewPersonServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propStatement = connection.createStatement();
-			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name");
+			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id");
 			propSet  = ResultSupport.toResult(propertySet);
 		}
 		catch (SQLException | ClassNotFoundException exc) {
@@ -105,6 +105,8 @@ public class NewPersonServlet extends HttpServlet {
 						sql.append("='");
 						sql.append(request.getParameter(parameterName));
 						sql.append("'");
+						
+						// TODO server-side validation of required input: disallow empty entries
 					}
 				}
 				

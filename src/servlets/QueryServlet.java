@@ -111,7 +111,7 @@ public class QueryServlet extends HttpServlet {
 	
 	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
 		Statement propStatement = connection.createStatement();
-		String selectPropertyQuery = "SELECT property.* FROM property, property_group WHERE property_group = property_group_id AND property.type IN ('character_varying', 'email')";
+		String selectPropertyQuery = "SELECT property.* FROM property, property_group WHERE property_group = property_group_id AND property.type IN ('character_varying', 'text', 'email')";
 		return propStatement.executeQuery(selectPropertyQuery);
 	}
 	

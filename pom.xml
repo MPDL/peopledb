@@ -85,4 +85,46 @@
   		<version>3.1.0</version>
   	</dependency>
   </dependencies>
+
+  <profiles>
+  	<profile>
+			<id>env-testing-continuum</id>
+			<build>
+				<plugins>
+				
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<id>copy-to-tomcat</id>
+								<phase>install</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+
+								<configuration>
+									<tasks>
+									
+										<sshexec command="rm -r ${tomcat.install.dir}/webapps/${project.warName}.war ${tomcat.install.dir}/webapps/${project.warName}" username="tomcat8" host="vm28.mpdl.mpg.de" keyfile="${user.home}/.ssh/id_rsa" knownhosts="${user.home}/.ssh/known_hosts" passphrase="" trust="true" verbose="true" failonerror="false"/>
+										<scp file="${project.build.directory}/${project.warName}.${project.packaging}" todir="tomcat8@vm28.mpdl.mpg.de:${tomcat.install.dir}/webapps" keyfile="${user.home}/.ssh/id_rsa" knownhosts="${user.home}/.ssh/known_hosts" passphrase="" trust="true" verbose="true" />
+
+									</tasks>
+								</configuration>
+
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+							    <groupId>org.apache.ant</groupId>
+							    <artifactId>ant-jsch</artifactId>
+							    <version>1.10.1</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+</profile>
+
+  </profiles>
 </project>

@@ -45,13 +45,40 @@
 							<c:set var = "type" scope = "session" value = "${current.type}"/>
 							<c:choose>
 								<c:when test="${'boolean' eq type}">
-									<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE"/>Yes</label>
-										<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label>
-									</td>
+									<c:choose>
+										<c:when test="${current.required eq true}">
+											<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE" required/>Yes</label>
+												<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE" required/>No</label>
+											</td>
+										</c:when>
+										<c:otherwise>
+											<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE"/>Yes</label>
+												<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label>
+											</td>
+										</c:otherwise>
+									</c:choose>
+								</c:when>
+								<c:when test="${'decimal' eq type}">
+									<c:set var = "col" scope = "session" value = "${current.db_name}"/>
+									<c:choose>
+										<c:when test="${current.required eq true}">
+											<td><input class="form-control" type="number" step="0.0001" name="${current.db_name}" value="${personInfo[col]}" required/></td>
+										</c:when>
+										<c:otherwise>
+											<td><input class="form-control" type="number" step="0.0001" name="${current.db_name}" value="${personInfo[col]}"/></td>
+										</c:otherwise>
+									</c:choose>
 								</c:when>
 								<c:otherwise>
 								<c:set var = "col" scope = "session" value = "${current.db_name}"/>
-									<td><input class="form-control" type="${current.type}" name="${current.db_name}"/></td>
+									<c:choose>
+										<c:when test="${current.required eq true}">
+											<td><input class="form-control" type="${current.type}" name="${current.db_name}" required/></td>
+										</c:when>
+										<c:otherwise>
+											<td><input class="form-control" type="${current.type}" name="${current.db_name}"/></td>
+										</c:otherwise>
+									</c:choose>
 								</c:otherwise>
 							</c:choose>
 					</c:forEach>

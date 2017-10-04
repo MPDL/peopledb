@@ -31,7 +31,7 @@
 	 	<table class="table-striped table-hover table-responsive"> 
 	 	<thead>
 	 		<c:forEach items="${nameList}" var="name">
-	 			<th style="text-align:center">${name}</th>
+	 			<th>${name}</th>
 	 		</c:forEach>
 	 	</thead> 
 		<c:forEach items="${result.rows}" var="currentRow">
