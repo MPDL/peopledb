@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>people</groupId>
+  <groupId>de.mpg.mpdl.people</groupId>
   <artifactId>people</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
@@ -106,8 +106,8 @@
 								<configuration>
 									<tasks>
 									
-										<sshexec command="rm -r ${tomcat.install.dir}/webapps/${project.warName}.war ${tomcat.install.dir}/webapps/${project.warName}" username="tomcat8" host="vm28.mpdl.mpg.de" keyfile="${user.home}/.ssh/id_rsa" knownhosts="${user.home}/.ssh/known_hosts" passphrase="" trust="true" verbose="true" failonerror="false"/>
-										<scp file="${project.build.directory}/${project.warName}.${project.packaging}" todir="tomcat8@vm28.mpdl.mpg.de:${tomcat.install.dir}/webapps" keyfile="${user.home}/.ssh/id_rsa" knownhosts="${user.home}/.ssh/known_hosts" passphrase="" trust="true" verbose="true" />
+										<sshexec command="rm -r ${tomcat.install.dir}/webapps/people.war ${tomcat.install.dir}/webapps/people" username="tomcat8" host="vm28.mpdl.mpg.de" keyfile="${user.home}/.ssh/id_rsa" knownhosts="${user.home}/.ssh/known_hosts" passphrase="" trust="true" verbose="true" failonerror="false"/>
+										<scp file="${project.build.directory}/${project.build.finalName}.war" remoteTofile="tomcat8@vm28.mpdl.mpg.de:${tomcat.install.dir}/webapps/people.war" keyfile="${user.home}/.ssh/id_rsa" knownhosts="${user.home}/.ssh/known_hosts" passphrase="" trust="true" verbose="true" />
 
 									</tasks>
 								</configuration>
