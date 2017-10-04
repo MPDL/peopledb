@@ -1,0 +1,110 @@
+@charset "ISO-8859-1";
+body {
+	padding-top: 70px;
+}
+
+alert {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	width: 100%;
+	height: 23px;
+}
+
+input, select, textarea {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: inherit;
+            box-sizing: border-box;
+            margin-left: 10px;
+            margin-bottom: 10px;
+}
+
+.table-responsive {
+   line-height: 30px;
+   min-height: 30px;
+   height: 30px;
+}
+
+.vertical-center {
+	min-height: 50vh;
+	display: flex;
+	align-items: center;
+}
+
+.container {
+	margin: 0 auto;
+}
+
+i {
+	display: block;
+	margin-right: 5px;
+}
+
+.icon-center {
+	display: block;
+	margin-right: 0px;
+}
+
+input[type="radio"] {
+	margin-left: 5px;
+	margin-right: 20px;
+}
+
+input[type="text"] {
+	height: 30px;
+	line-height: 30px;
+	font-size: 16px;
+}
+
+select {
+	height: 30px;
+	line-height: 30px;
+	font-size: 16px;
+}
+
+button {
+	margin-left: 10px;
+	margin-bottom: 10px;
+ 	line-height: 30px;
+ 	font-size: 16px;
+}
+
+
+h2 {
+  margin-bottom: 40px;
+}
+
+h3 {
+  margin-bottom: 20px;
+}
+
+.jumbotron {
+    background-color: #ecf9f2; 
+}
+
+.saveGroup {
+	align-items: center;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+#sqlQuery {
+	margin-top: 20px;
+}
+
+.form-control {
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.form-control-inline {
+    min-width: 0;
+    width: auto;
+    display: inline;
+}
+
+.result-options {
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
