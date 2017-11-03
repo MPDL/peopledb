@@ -34,6 +34,7 @@ public class DeleteUserServlet extends HttpServlet {
 		try (Connection connection = DBConnection.getConnection()) {
 			if (deletedID == null) {
 				errors.append("An error occured during user retrieval.");
+				System.err.println("No index is available: check parameter passing if delete_user was passed correctly.");
 			}
 			else {
 				synchronized(this) {
@@ -45,6 +46,7 @@ public class DeleteUserServlet extends HttpServlet {
 		}
 		catch (SQLException | ClassNotFoundException exc) {
 			errors.append("An error occured during delete: ").append(exc.getMessage());
+			exc.printStackTrace();
 		}
 		finally {
 			request.setAttribute("message", messages.toString());

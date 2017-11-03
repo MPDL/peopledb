@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.jstl.sql.Result;
 import javax.servlet.jsp.jstl.sql.ResultSupport;
 
+import org.apache.commons.lang3.StringUtils;
+
 import helpers.DBConnection;
 
 @WebServlet("/NewPropertyServlet")
@@ -91,20 +93,19 @@ public class NewPropertyServlet extends HttpServlet {
 									inputType = "text";
 									break;
 								case "decimal":
-									type = " double precision DEFAULT 0";
+									type = " double precision";
 									inputType = "decimal";
 									break;
 								case "integer":
-									type = " integer DEFAULT 0";
+									type = " integer";
 									inputType = "number";
 									break;
 								case "boolean":
 									type = " boolean DEFAULT FALSE";
-									inputType = "checkbox";
+									inputType = "boolean";
 									break;
 								case "email":
-									// TODO: set default
-									type = " email DEFAULT 'aneliaapetrova@gmail.com'";
+									type = " email";
 									inputType = "email";
 									break;
 								case "date":
@@ -117,11 +118,20 @@ public class NewPropertyServlet extends HttpServlet {
 									break;
 							}
 							
+							String required;
+							String parRequired = request.getParameter("prop_required");
+							if (parRequired != null && StringUtils.equalsIgnoreCase(parRequired, "true")) {
+								required = "TRUE";
+							}
+							else {
+								required = "FALSE";
+							}
+							
 							createStatement = connection.createStatement();
-							createStatement.executeUpdate("INSERT INTO property (property_group, db_name, name, type) VALUES (" + pGroup + ", '" + dbName + "', '" + pName + "', '" + inputType + "')");
+							createStatement.executeUpdate("INSERT INTO property (property_group, db_name, name, type, required) VALUES (" + pGroup + ", '" + dbName + "', '" + pName + "', '" + inputType + "', '" + required + "')");
 							
 							alterStatement = connection.createStatement();
-							alterStatement.executeUpdate("ALTER TABLE person ADD COLUMN " + dbName + type);
+							alterStatement.executeUpdate("ALTER TABLE person ADD COLUMN " + dbName + type); // + default
 							
 							messages.append("Property " + pName + " created.");
 						}

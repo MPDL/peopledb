@@ -18,19 +18,16 @@ public class EmailProvider {
 	public synchronized static void sendEmail(String host, String port, String sender, String username, String password,
 			String recipients, String subjectText, String messageText) throws AddressException,
     MessagingException {
-		Properties properties = new Properties();
+		Properties properties = System.getProperties();
+        properties.put("mail.smtp.starttls.enable", "true");
+		properties.put("mail.transport.protocol", "smtp");
+		properties.put("mail.smtp.from", sender);
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", port);
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.auth", "false");
+
+        Session session = Session.getDefaultInstance(properties);
         
-        Authenticator authenticator = new Authenticator() {
-        	public PasswordAuthentication getPasswordAuthentication() {
-        		return new PasswordAuthentication(username, password);
-        	}
-		};
-		
-		Session session = Session.getInstance(properties, authenticator);
 		Message message = new MimeMessage(session);
 		InternetAddress[] recipientAddresses = InternetAddress.parse(recipients);
 		
@@ -40,6 +37,6 @@ public class EmailProvider {
 		message.setText(messageText);
 		message.setSentDate(new Date());
 		
-		Transport.send(message);
+		Transport.send(message, recipientAddresses);
 	}
 }

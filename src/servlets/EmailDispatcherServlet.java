@@ -18,12 +18,12 @@ public class EmailDispatcherServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 8367164284034569433L;
 
-	String senderEmail = "mpdl_employee_database@mpdl.mpg.de";
-	String username = "MUCAM\\apetrova";
-	String password = System.getProperty("emailpw");
-	LinkedList<String> recipients = new LinkedList<>();
-	String host = "mail.mucam.mpg.de";
+	String senderEmail = "mpdl_dbapp@mpdl.mpg.de";
+	String host = System.getProperty("mailHost");
 	String port = "25";
+	String username;
+	String password;
+	LinkedList<String> recipients = new LinkedList<>();
 	
 	public void init() {
 		ServletContext context = getServletContext();

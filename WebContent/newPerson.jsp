@@ -41,7 +41,7 @@
 							<tr><td colspan=2 align="center"><h3>${groupName}</h3></td></tr>
 						</c:if>
 						<tr>
-							<td><label for="${current.db_name}">${current.name}</label></td>
+							<td><label for="${current.db_name}">${current.name}</label><label class="req"><c:out value="${current.required eq true?' *':''}"/></label></td>
 							<c:set var = "type" scope = "session" value = "${current.type}"/>
 							<c:choose>
 								<c:when test="${'boolean' eq type}">
@@ -83,6 +83,7 @@
 							</c:choose>
 					</c:forEach>
 						</table>
+						<div><label>Fields marked with * are required.</label></div>
 						<button type="submit" class="btn btn-primary" name="save" value="Save"><i class="fa fa-floppy-o"></i>Save</button>
 						<button type="reset" class="btn btn-secondary" name="reset" value="Reset"><i class="fa fa-trash-o"></i>Reset</button>
 						</div>

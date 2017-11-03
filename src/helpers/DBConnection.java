@@ -28,4 +28,8 @@ public class DBConnection {
 	public static String toDbName(String value) {
 		return value.replaceAll(" |-", "_").toLowerCase();
 	}
+	
+	public static String toPostgreSQLWildcards(String expression) {
+		return expression.replaceAll("\\*", "%").replaceAll("\\?", "_");
+	}
 }

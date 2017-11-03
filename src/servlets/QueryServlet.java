@@ -45,6 +45,7 @@ public class QueryServlet extends HttpServlet {
 		
 		LinkedList<String> nameList = new LinkedList<String>();
 		LinkedList<String> dbNameList = new LinkedList<String>();
+		LinkedList<String> typeList = new LinkedList<String>();
 		ResultSet propertySet = null;
 		ResultSet resultData = null;
 		Result result = null;
@@ -52,19 +53,31 @@ public class QueryServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propertySet = getPropertySet(connection);
-			getPropertyNames(propertySet, nameList, dbNameList);
+			getPropertyNames(propertySet, nameList, dbNameList, typeList);
 			
 			searchStatement = connection.createStatement();
 			StringBuilder sql = new StringBuilder();
 			
+			// search within results
+			if (request.getParameter("current_query") != null && "nested".equals(request.getParameter("nested_search")) && !"".equals(request.getParameter("query"))) {
+				String currentQuery = request.getParameter("current_query");
+				sql.append(StringUtils.substringBeforeLast(currentQuery, "ORDER BY"));
+				if (StringUtils.containsIgnoreCase(currentQuery, "WHERE")) {
+					sql.append(" AND (");
+				}
+				else {
+					sql.append(" WHERE (");
+				}
+				appendCriteria(request, sql, dbNameList, typeList);
+			}
 			// sort results
-			if (request.getParameter("current_query") != null) {
+			else if (request.getParameter("current_query") != null) {
 				sql = sortResults(request, sql);
 			}
 			// quick search
 			else if ("Search".equals(request.getParameter("quick_search")) && !"".equals(request.getParameter("query"))) {
 				sql = beginRequest(request, sql);
-				sql = appendCriteria(request, sql, dbNameList);
+				sql = appendCriteria(request, sql, dbNameList, typeList);
 			}
 			// advanced search
 			else if ("Search".equals(request.getParameter("advanced_search")) && !"".equals(request.getParameter("value1"))) {
@@ -97,6 +110,7 @@ public class QueryServlet extends HttpServlet {
 		}
 		finally {
 			request.setAttribute("message", messages.toString());
+			request.setAttribute("current_query", messages.toString());
 			request.setAttribute("error", errors.toString());
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);
@@ -111,7 +125,7 @@ public class QueryServlet extends HttpServlet {
 	
 	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
 		Statement propStatement = connection.createStatement();
-		String selectPropertyQuery = "SELECT property.* FROM property, property_group WHERE property_group = property_group_id AND property.type IN ('character_varying', 'text', 'email')";
+		String selectPropertyQuery = "SELECT property.* FROM property, property_group WHERE property_group = property_group_id";
 		return propStatement.executeQuery(selectPropertyQuery);
 	}
 	
@@ -119,12 +133,14 @@ public class QueryServlet extends HttpServlet {
 	 * Mutates @param nameList and @param dbNameList
 	 * @throws SQLException 
 	 */
-	private void getPropertyNames(ResultSet propertySet, List<String> names, List<String> dbNames) throws SQLException {
+	private void getPropertyNames(ResultSet propertySet, List<String> names, List<String> dbNames, List<String> types) throws SQLException {
 		while (propertySet.next()) {
 			String propertyName = propertySet.getString("name");
 			String propertyDbName = propertySet.getString("db_name");
+			String type = propertySet.getString("type");
 			names.add(propertyName);
 			dbNames.add(propertyDbName);
+			types.add(type);
 		}
 	}
 	
@@ -172,20 +188,25 @@ public class QueryServlet extends HttpServlet {
 	/**
 	 * Mutates @param sql
 	 */
-	private StringBuilder appendCriteria(final HttpServletRequest request, StringBuilder sql, LinkedList<String> dbNameList) {
+	private StringBuilder appendCriteria(final HttpServletRequest request, StringBuilder sql, LinkedList<String> dbNameList, LinkedList<String> typeList) {
+		String query = request.getParameter("query");
+		query = DBConnection.toPostgreSQLWildcards(query);
+		
+		int listCount = dbNameList.size();
 		boolean first = true;
-		for (String dbName : dbNameList)
+		for (int i = 0; i < listCount; i++)
 		{
-			if (!first) {
-				sql.append(" OR ");
+			if (typeList.get(i).matches("character_varying|text|email")) {
+				String dbName = dbNameList.get(i);
+				if (!first) {
+					sql.append(" OR ");
+				}
+				else {
+					first = false;
+				}
+				sql.append(dbName);
+				sql.append(" ILIKE '%").append(query).append("%'");
 			}
-			else {
-				first = false;
-			}
-			sql.append(dbName);
-			sql.append(" ILIKE '%");
-			sql.append(request.getParameter("query"));
-			sql.append("%'");
 		}
 		sql.append(") ORDER BY " + dbNameList.getFirst());
 		

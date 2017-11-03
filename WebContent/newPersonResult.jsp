@@ -26,10 +26,10 @@
 			</c:when>
 			<c:otherwise>
 				<h2>Person Details</h2>
-					<input type="hidden" name="person_id" value="${person_id}"/>
 					<div class="jumbotron">
-				<c:forEach items="${personData.rows}" var="personInfo">
+					<form method="get" action="EditPersonServlet">
 					<input type="hidden" name="person_id" value="${person_id}"/>
+				<c:forEach items="${personData.rows}" var="personInfo">
 					<h3>Basic Data</h3>
 					<table>
 					<c:set var = "groupName" scope = "session" value = "Basic Data"/>
@@ -45,8 +45,9 @@
 					</c:forEach>
 					</table>
 					</c:forEach>
-						<button type="submit" class="btn btn-primary" formmethod="get" formaction="/EditPersonServlet"><i class="fa fa-pencil"></i>Edit</button>
-						</div>
+						<button type="submit" class="btn btn-primary"><i class="fa fa-pencil"></i>Edit</button>
+					</form>
+					</div>
 		</c:otherwise>
 		</c:choose>
 		</div>

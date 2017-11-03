@@ -2,6 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@ include file="../WEB-INF/include/db.jsp" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -40,20 +41,43 @@
 							<tr><td colspan=2 align="center"><h3>${groupName}</h3></td></tr>
 						</c:if>
 						<tr>
-							<td><label for="${current.db_name}">${current.name}</label></td>
+							<td><label for="${current.db_name}">${current.name}</label><label class="req"><c:out value="${current.required eq true?' *':''}"/></label></td>
 							<c:set var = "type" scope = "session" value = "${current.type}"/>
 							<c:choose>
 								<c:when test="${'boolean' eq type}">
+									<c:set var = "col" scope = "session" value = "${current.db_name}"/>
 									<c:choose>
 										<c:when test="${current.required eq true}">
-											<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE" required/>Yes</label>
-												<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE" required/>No</label>
-											</td>
+											<c:choose>
+												<c:when test="${fn:toUpperCase(personInfo[col]) eq 'TRUE'}">
+													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE" checked="checked" required/>Yes</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE" required/>No</label></td>
+												</c:when>
+												<c:when test="${fn:toUpperCase(personInfo[col]) eq 'FALSE'}">
+													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE" required/>Yes</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE" checked="checked" required/>No</label></td>
+												</c:when>
+												<c:otherwise>
+													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE" required/>Yes</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE" required/>No</label></td>
+												</c:otherwise>
+											</c:choose>
 										</c:when>
 										<c:otherwise>
-											<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE"/>Yes</label>
-												<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label>
-											</td>
+										<c:choose>
+												<c:when test="${fn:toUpperCase(personInfo[col]) eq 'TRUE'}">
+													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE" checked="checked"/>Yes</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label></td>
+												</c:when>
+												<c:when test="${fn:toUpperCase(personInfo[col]) eq 'FALSE'}">
+													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE"/>Yes</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE" checked="checked"/>No</label></td>
+												</c:when>
+												<c:otherwise>
+													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE"/>Yes</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label></td>
+												</c:otherwise>
+											</c:choose>
 										</c:otherwise>
 									</c:choose>
 								</c:when>
@@ -80,13 +104,14 @@
 									</c:choose>
 								</c:otherwise>
 							</c:choose>
+							</tr>
 					</c:forEach>
 					</table>
 					<button type="submit" class="btn btn-primary" name="save" value="Save">Save</button>
-					<button type="submit" class="btn btn-danger" name="delete_user" value="${personInfo[person_id]}"
-							formmethod="post" formaction="DeleteUserServlet"
-							onclick="return confirm('Are you sure you want to delete this user?')">Delete person</button>
 				</c:forEach>
+			</form>
+			<form method="post" action="DeleteUserServlet" onsubmit="return confirm('Are you sure you want to delete this user?');">
+				<button type="submit" class="btn btn-danger" name="delete_user" value="${person_id}">Delete person</button>
 			</form>
 			</div>
 			</c:otherwise>

@@ -40,10 +40,10 @@
 						</select>
 					</p>
 					<p>
-						<input class="form-control" type="text" size=40 maxlength=60 placeholder="Subject" name="subject" required></input>
+						<input class="form-control" type="text" size=40 maxlength=80 placeholder="Subject" name="subject" required></input>
 					</p>
 					<p>
-						<textarea class="form-control" rows=6 cols=42 maxlength=300 placeholder="Message body" name="msgBody" required></textarea>
+						<textarea class="form-control" rows=6 cols=42 maxlength=600 placeholder="Message body" name="msgBody" required></textarea>
 					</p>
 					<button type="submit" class="btn btn-primary">Send</button>
 				</form>

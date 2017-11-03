@@ -49,6 +49,13 @@
 						<option value="email">Email</option>
 						<option value="date">Date</option>
 					</select></td></tr>
+					<tr>
+					<td><label>Required</label></td>
+					<td>
+						<label class="radio-inline"><input type="radio" id="prop_required" name="prop_required" value="TRUE"/>Yes</label>
+						<label class="radio-inline"><input type="radio" id="prop_required" name="prop_required" value="FALSE" checked="checked"/>No</label>
+					</td>
+					</tr>
 					</table>
 					<div class="saveGroup">
 						<button type="submit" class="btn btn-primary" name="save" value="Save"><i class="fa fa-floppy-o"></i>Save</button>

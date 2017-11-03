@@ -30,19 +30,12 @@
 					<c:choose>
 					<c:when test="${not empty resultData.rows}">
 						<form method="get" action="QueryServlet">
-						<div class="input-group col-xs-3 result-options">
+						<div class="input-group result-options">
 						<span class="input-group-btn">
-						<c:choose>
-							<c:when test="${fn:contains(message, 'DESC')}">
-								<button name="sort_by" class="btn btn-default" value="ASC"><i class="fa fa-sort-asc"></i>Sort by</button>
-							</c:when>
-							<c:otherwise>
-								<button name="sort_by" class="btn btn-default" value="DESC"><i class="fa fa-sort-desc"></i>Sort by</button>
-							</c:otherwise>
-						</c:choose>
-						</span>
-						<input name="current_query" type="hidden" value="${message}"/>
-							<select name="sort_criteria" class="dropdown form-control">
+						<input name="current_query" type="hidden" value="${current_query}"/>
+						<table>
+							<tr><td><label>Sort by: </label></td>
+							<td><select name="sort_criteria" class="dropdown form-control">
 								<c:forEach items="${nameList}" var="colName" varStatus="status">
 									<c:choose>
 										<c:when test="${fn:contains(fn:substringAfter(message, 'ORDER BY'), dbNameList[status.index])}">
@@ -53,11 +46,29 @@
 										</c:otherwise>
 									</c:choose>
 								</c:forEach>
-							</select>
+							</select></td>
+							<td><select name="sort_by" class="dropdown form-control">
+								<c:choose>
+									<c:when test="${fn:contains(message, 'DESC')}">
+										<option value="ASC"><i class="fa fa-sort-asc"></i>ASC</option>
+										<option value="DESC" selected><i class="fa fa-sort-desc"></i>DESC</option>
+									</c:when>
+									<c:otherwise>
+										<option value="ASC" selected><i class="fa fa-sort-asc"></i>ASC</option>
+										<option value="DESC"><i class="fa fa-sort-desc"></i>DESC</option>
+									</c:otherwise>
+								</c:choose>
+							</select></td>
+							<td><button name="sort_by" class="btn btn-default">Go</button></td>
+							<td><input class="form-control form-control-inline" type="text" name="query" placeholder="Search within results" required/></td>
+							<td><button formmethod="get" formaction="QueryServlet" name="nested_search" value="nested" class="btn btn-default"><i class="fa fa-search"></i></button></td>
+						</tr>
+							</table>
+							</span>
 						</div>
 						</form>
 						<form method="get" action="EmailListServlet">
-					 	<table class="table-striped table-hover table-responsive"> 
+					 	<table class="table-striped table-hover table-responsive" style="white-space: nowrap;"> 
 					 	<thead> 
 					 		<th class="col-md-2"></th>
 					 		<c:forEach items="${nameList}" var="colHead">
@@ -81,6 +92,7 @@
 						<div class="result-options">
 							<button id="sendMail" type="submit" class="btn btn-primary"><i class="fa fa-envelope fa-fw"></i>Email selected</button>
 							<button name="editSelected" type="submit" class="btn btn-primary" formmethod="post" formaction="BatchEditServlet" value=1><i class="fa fa-pencil fa-fw"></i>Edit selected</button>
+							<button name="export_csv" type="submit" class="btn btn-primary" formmethod="get" formaction="CSVServlet" value="${current_query}"><i class="fa fa-file fa-fw"></i>Export as CSV</button>
 						</div>
 						</form>
 					</c:when>

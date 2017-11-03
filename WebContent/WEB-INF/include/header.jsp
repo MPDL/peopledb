@@ -4,9 +4,11 @@
 			</div>
 			<ul class="nav navbar-nav">
 				<li class="nav-item">
+					<a class="nav-link" href="ViewAllServlet"><i class="fa fa-address-book"></i>View all members</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link" href="advancedSearch.jsp"><i class="fa fa-search"></i>Advanced search</a>
 				</li>
-				
 				<li class="nav-item">
 					<a class="nav-link" href="NewPersonServlet"><i class="fa fa-user-plus"></i>New member</a>
 				</li>
