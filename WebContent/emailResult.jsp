@@ -11,8 +11,9 @@
 <link href="css/font-awesome.min.css" rel="stylesheet">
 <link href="css/boxAligner.css" rel="stylesheet">
 </head>
-<body style="padding-top: 70px;">
+<body>
 <div class="col-xs-11 vertical-center" align="center">
+<div class="container">
 <%@ include file="../WEB-INF/include/header.jsp" %>
 		<h2>Email dispatch</h2>
 		<c:choose>
@@ -38,6 +39,7 @@
 			</c:otherwise>
 		</c:choose>
 	<%@ include file="../WEB-INF/include/footer.jsp" %>
+</div>
 </div>
 </body>
 </html>
