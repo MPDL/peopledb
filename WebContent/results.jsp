@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../WEB-INF/include/db.jsp" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
@@ -6,7 +6,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>The MPDL People</title>
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/font-awesome.min.css" rel="stylesheet">
@@ -32,7 +32,6 @@
 						<form method="get" action="QueryServlet">
 						<div class="input-group result-options">
 						<span class="input-group-btn">
-						<input name="current_query" type="hidden" value="${current_query}"/>
 						<table>
 							<tr><td><label>Sort by: </label></td>
 							<td><select name="sort_criteria" class="dropdown form-control">
@@ -47,7 +46,9 @@
 									</c:choose>
 								</c:forEach>
 							</select></td>
-							<td><select name="sort_by" class="dropdown form-control">
+							<td>
+							<input name="current_query" type="hidden" value="${current_query}"/>
+							<select name="sort_by" class="dropdown form-control">
 								<c:choose>
 									<c:when test="${fn:contains(message, 'DESC')}">
 										<option value="ASC"><i class="fa fa-sort-asc"></i>ASC</option>
@@ -60,7 +61,7 @@
 								</c:choose>
 							</select></td>
 							<td><button name="sort_by" class="btn btn-default">Go</button></td>
-							<td><input class="form-control form-control-inline" type="text" name="query" placeholder="Search within results" required/></td>
+							<td><input class="form-control form-control-inline" type="text" name="query" placeholder="Search within results"/></td>
 							<td><button formmethod="get" formaction="QueryServlet" name="nested_search" value="nested" class="btn btn-default"><i class="fa fa-search"></i></button></td>
 						</tr>
 							</table>
@@ -72,7 +73,7 @@
 					 	<thead> 
 					 		<th class="col-md-2"></th>
 					 		<c:forEach items="${nameList}" var="colHead">
-					 			<th>${colHead}</th>
+					 			<th class="text-center">${colHead}</th>
 					 		</c:forEach>
 					 	</thead> 
 					 	<c:forEach items="${resultData.rows}" var="currentRow">

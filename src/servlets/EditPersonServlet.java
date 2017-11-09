@@ -133,6 +133,7 @@ public class EditPersonServlet extends HttpServlet {
 						throw new SQLException();
 					}
 					if (parameterValue != null && parameterValue != "") {
+						parameterValue = DBConnection.dbEscape(parameterValue);
 						if (!first) {
 							sql.append(", ");
 						}

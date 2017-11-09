@@ -43,7 +43,7 @@ public class NewPersonServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propStatement = connection.createStatement();
-			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id");
+			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id ASC");
 			propSet  = ResultSupport.toResult(propertySet);
 		}
 		catch (SQLException | ClassNotFoundException exc) {
@@ -103,7 +103,7 @@ public class NewPersonServlet extends HttpServlet {
 				}
 				
 				StringBuilder sql = new StringBuilder();
-				sql.append("UPDATE person SET ");
+				sql.append("UPDATE person SET deleted=FALSE");
 				
 				boolean first = true;
 				
@@ -118,12 +118,8 @@ public class NewPersonServlet extends HttpServlet {
 						throw new SQLException();
 					}
 					if (parameterValue != null && parameterValue != "") {
-						if (!first) {
-							sql.append(", ");
-						}
-						else {
-							first = false;
-						}
+						parameterValue = DBConnection.dbEscape(parameterValue);
+						sql.append(", ");
 						if (!new InputValidator().validateInput(parameterValue, parameterType)) {
 							// rollback operation
 							errors.append("Invalid " + parameterType + " format: " + parameterValue);
@@ -158,6 +154,10 @@ public class NewPersonServlet extends HttpServlet {
 			}
 			
 			if (errors.length() == 0) {
+				connection.commit();
+				PreparedStatement makeNewPersonVisible = connection.prepareStatement("UPDATE person SET deleted=false WHERE person_id=?");
+				makeNewPersonVisible.setInt(1, personId);
+				makeNewPersonVisible.executeUpdate();
 				connection.commit();
 			}
 		}

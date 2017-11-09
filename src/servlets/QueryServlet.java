@@ -19,8 +19,10 @@ import javax.servlet.jsp.jstl.sql.Result;
 import javax.servlet.jsp.jstl.sql.ResultSupport;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpRequest;
 
 import helpers.DBConnection;
+import helpers.InputValidator;
 
 @WebServlet("/QueryServlet")
 public class QueryServlet extends HttpServlet {
@@ -71,7 +73,7 @@ public class QueryServlet extends HttpServlet {
 				appendCriteria(request, sql, dbNameList, typeList);
 			}
 			// sort results
-			else if (request.getParameter("current_query") != null) {
+			else if (request.getParameter("current_query") != null && "".equals(request.getParameter("query"))) {
 				sql = sortResults(request, sql);
 			}
 			// quick search
@@ -125,7 +127,7 @@ public class QueryServlet extends HttpServlet {
 	
 	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
 		Statement propStatement = connection.createStatement();
-		String selectPropertyQuery = "SELECT property.* FROM property, property_group WHERE property_group = property_group_id";
+		String selectPropertyQuery = "SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id ASC";
 		return propStatement.executeQuery(selectPropertyQuery);
 	}
 	
@@ -191,6 +193,7 @@ public class QueryServlet extends HttpServlet {
 	private StringBuilder appendCriteria(final HttpServletRequest request, StringBuilder sql, LinkedList<String> dbNameList, LinkedList<String> typeList) {
 		String query = request.getParameter("query");
 		query = DBConnection.toPostgreSQLWildcards(query);
+		query = DBConnection.dbQueryEscape(query);
 		
 		int listCount = dbNameList.size();
 		boolean first = true;
@@ -216,7 +219,7 @@ public class QueryServlet extends HttpServlet {
 	/**
 	 * Mutates @param sql
 	 */
-	private StringBuilder buildAdvancedQuery(final HttpServletRequest request, StringBuilder sql, String firstCol) {
+	private StringBuilder buildAdvancedQuery(final HttpServletRequest request, StringBuilder sql, String firstCol) throws SQLException {
 		// handling multiple requests: for now connected with AND
 		for (int i = 1; ; i++) {
 			String propertyAndType = request.getParameter("property" + i);
@@ -226,11 +229,16 @@ public class QueryServlet extends HttpServlet {
 			String property = StringUtils.split(propertyAndType, '$')[0];
 			String type = StringUtils.split(propertyAndType, '$')[1];
 			String searchTerm = DBConnection.dbEscape(property);
-			/* form request according to lexicographic input */
+			String parameterValue = request.getParameter("value" + i);
+			// validate input
+			if (!new InputValidator().validateInput(parameterValue, type)) {
+				throw new SQLException("Invalid value '" + parameterValue  + "' for parameter '" + searchTerm + "' of type '" + type + "'.");
+			}
+			// form request according to lexicographic input
 			String compareArg = request.getParameter("lexicographic" + i);
 			sql.append(searchTerm);
 			sql.append(getCompareArg(compareArg));
-			sql.append(DBConnection.dbQueryEscape(request.getParameter("value" + i)));
+			sql.append(DBConnection.dbQueryEscape(parameterValue));
 			sql.append("'");
 			sql.append(" AND ");
 		}

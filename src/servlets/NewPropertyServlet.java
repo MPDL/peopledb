@@ -101,7 +101,7 @@ public class NewPropertyServlet extends HttpServlet {
 									inputType = "number";
 									break;
 								case "boolean":
-									type = " boolean DEFAULT FALSE";
+									type = " boolean";
 									inputType = "boolean";
 									break;
 								case "email":
@@ -109,7 +109,7 @@ public class NewPropertyServlet extends HttpServlet {
 									inputType = "email";
 									break;
 								case "date":
-									type = " date DEFAULT CURRENT_DATE";
+									type = " date";
 									inputType = "date";
 									break;
 								default:

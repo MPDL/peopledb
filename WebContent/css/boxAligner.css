@@ -108,3 +108,12 @@ h3 {
 	margin-top: 30px;
 	margin-bottom: 30px;
 }
+
+th {
+	text-align: center;
+}
+
+.table {
+	border-collapse: separate;
+    border-spacing: 10px;
+}

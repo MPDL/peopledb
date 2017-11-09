@@ -11,17 +11,17 @@ public class DBConnection {
 	public static Connection getConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("org.postgresql.Driver");
 		Connection connection = null;
-		connection = DriverManager.getConnection("jdbc:postgresql://vm28.mpdl.mpg.de/people", System.getProperty("peopleDBName"), System.getProperty("peopleDBPassword"));
+		connection = DriverManager.getConnection("jdbc:postgresql://vm28.mpdl.mpg.de/people?useUnicode=yes&characterEncoding=UTF-8", System.getProperty("peopleDBName"), System.getProperty("peopleDBPassword"));
 		
 		return connection;
 	}
 	
 	public static String dbEscape(String value) {
-		return value.replace("'", "\\'");
+		return value.replace("'", "''");
 	}
 	
 	public static String dbQueryEscape(String value) {
-		value = value.replace("'", "\\'").replace("*", "%");
+		value = value.replace("'", "''").replace("*", "%");
 		return StringUtils.replaceIgnoreCase(value, "SELECT % FROM", "SELECT * FROM");
 	}
 	

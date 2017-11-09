@@ -6,7 +6,7 @@
 <%@page import="java.util.LinkedList"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../WEB-INF/include/db.jsp" %>
 <%
 	// TODO: separate logic from presentation
@@ -19,7 +19,7 @@
 	}
 
 	Statement propStatement = connection.createStatement();
-	ResultSet propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name");
+	ResultSet propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id ASC");
 	
 	Map<String, List<Triple<String, String, String>>> propertyMap = new LinkedHashMap<>();
 	while (propertySet.next()) {
