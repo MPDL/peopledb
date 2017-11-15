@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.plexus.util.ExceptionUtils;
+
 import helpers.EmailProvider;
 
 @WebServlet("/EmailDispatcherServlet")
@@ -53,7 +55,7 @@ public class EmailDispatcherServlet extends HttpServlet {
 			exc.printStackTrace();
 		}
 		catch (Exception exc) {
-			errors.append("An unexpected error occured while sending the message: " + exc.toString());
+			errors.append("An unexpected error occured while sending the message: " + ExceptionUtils.getFullStackTrace(exc));
 			exc.printStackTrace();
 		}
 		finally {
