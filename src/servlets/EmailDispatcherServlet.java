@@ -53,7 +53,7 @@ public class EmailDispatcherServlet extends HttpServlet {
 			exc.printStackTrace();
 		}
 		catch (Exception exc) {
-			errors.append("An unexpected error occured while sending the message: " + exc.getMessage());
+			errors.append("An unexpected error occured while sending the message: " + exc.toString());
 			exc.printStackTrace();
 		}
 		finally {
