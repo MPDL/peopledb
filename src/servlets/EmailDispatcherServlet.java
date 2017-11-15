@@ -52,6 +52,10 @@ public class EmailDispatcherServlet extends HttpServlet {
 			errors.append("An error occured while sending message: " + exc.getMessage());
 			exc.printStackTrace();
 		}
+		catch (Exception exc) {
+			errors.append("An unexpected error occured while sending the message: " + exc.getMessage());
+			exc.printStackTrace();
+		}
 		finally {
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
