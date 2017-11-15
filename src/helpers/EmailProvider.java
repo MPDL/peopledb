@@ -22,12 +22,12 @@ public class EmailProvider {
 		properties.put("mail.transport.protocol", "smtp");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.auth", "false");
 		properties.put("mail.smtp.from", sender);
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", port);
-        properties.put("mail.smtp.auth", "false");
 
-        Session session = Session.getDefaultInstance(properties);
+        Session session = Session.getInstance(properties);
         
 		Message message = new MimeMessage(session);
 		InternetAddress[] recipientAddresses = InternetAddress.parse(recipients);
