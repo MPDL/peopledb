@@ -45,7 +45,7 @@ public class EmailDispatcherServlet extends HttpServlet {
 		StringBuilder errors = new StringBuilder();
 		
 		try {
-			EmailProvider.sendEmail(host, port, senderEmail, username, password, csRecipients.toString(), subject, content);
+			EmailProvider.sendEmail(host, port, senderEmail, "", "", csRecipients.toString(), subject, content);
 			messages.append("Email was sent successfully");
 		}
 		catch (MessagingException exc) {
