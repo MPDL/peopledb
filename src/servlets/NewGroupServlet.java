@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import helpers.DBConnection;
 
 @WebServlet("/NewGroupServlet")
@@ -36,6 +38,7 @@ public class NewGroupServlet extends HttpServlet {
 			if ("Save".equals(request.getParameter("save"))) {
 				synchronized(this) {
 					String gName = request.getParameter("group_name");
+					validateGroupName(gName);
 					
 					testPropStatement = connection.createStatement();
 					testPropSet = testPropStatement.executeQuery("SELECT * FROM property_group WHERE property_group.name ILIKE '" + DBConnection.dbEscape(gName) + "'");
@@ -66,6 +69,15 @@ public class NewGroupServlet extends HttpServlet {
 			if (testPropStatement != null) try { testPropStatement.close(); } catch (SQLException exc) {}
 			if (testPropSet != null) try { testPropSet.close(); } catch (SQLException exc) {}
 			if (createStatement != null) try { createStatement.close(); } catch (SQLException exc) {}
+		}
+	}
+	
+	private void validateGroupName(String gName) throws SQLException {
+		if (StringUtils.isNumeric(gName)) {
+			throw new SQLException("Group name cannot contain only numeric characters.");
+		}
+		if (!StringUtils.isAlphanumericSpace(gName)) {
+			throw new SQLException("Invalid character in property group name.");
 		}
 	}
 	

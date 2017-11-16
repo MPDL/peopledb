@@ -71,6 +71,7 @@ public class NewPropertyServlet extends HttpServlet {
 			if ("Save".equals(request.getParameter("save"))) {
 				pGroup = Integer.parseInt(request.getParameter("property_group"));
 				String pName = request.getParameter("property_name");
+				validatePropertyName(pName);
 				
 				testPropStatement = connection.createStatement();
 	
@@ -163,6 +164,15 @@ public class NewPropertyServlet extends HttpServlet {
 			if (propertyGroupSet2 != null) try { propertyGroupSet2.close(); } catch (SQLException exc) {}
 			if (propGroupStatement != null) try { propGroupStatement.close(); } catch (SQLException exc) {}
 			if (propertyGroupSet != null) try { propertyGroupSet.close(); } catch (SQLException exc) {}
+		}
+	}
+	
+	private void validatePropertyName(String pName) throws SQLException {
+		if (StringUtils.isNumeric(pName)) {
+			throw new SQLException("Property name cannot contain only numeric characters.");
+		}
+		if (!StringUtils.isAlphanumericSpace(pName)) {
+			throw new SQLException("Invalid character in property name.");
 		}
 	}
 }

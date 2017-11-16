@@ -9,7 +9,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../WEB-INF/include/db.jsp" %>
 <%
-	// TODO: separate logic from presentation
+	// get a list of all available properties
 	int widgets;
 	if (request.getParameter("more_criteria") == null) {
 		widgets = 1;
@@ -83,8 +83,8 @@ function changeInputType(sel, id) {
 						<optgroup label="<%= entry.getKey() %>">
 						<% for (Triple<String, String, String> colNames : entry.getValue()) { %>
 								<option name="option<%= widget %>" value="<%= colNames.getLeft() + "$" + colNames.getMiddle() %>"
-								<% if (request.getParameter("property" + widget) != null && request.getParameter("property" + widget).equals(colNames.getLeft())) { %>
-								selected
+								<% if (request.getParameter("property" + widget) != null && request.getParameter("property" + widget).equals(colNames.getLeft()+ "$" + colNames.getMiddle())) { %>
+								selected 
 								<% } %>
 								><%= colNames.getRight() %></option>
 						<% } %>
@@ -121,7 +121,7 @@ function changeInputType(sel, id) {
 			</table>
 			<div class="saveGroup">
 				<input type="checkbox" name="show_deleted" value="true" checked/> Show deleted
-				<button type="submit" name="more_criteria" value=<%= ++widgets %> class="btn btn-outline-primary" formmethod="get" formaction="advancedSearch.jsp"><i class="fa fa-plus icon-center"></i></button>
+				<button type="submit" name="more_criteria" value=<%= ++widgets %> class="btn btn-outline-primary" formmethod="get" formaction="advancedSearch.jsp"><i class="fa fa-plus icon-center"></i></button> Add criteria
 			</div>
 			<div class="saveGroup"><button type="submit" name="advanced_search" value="Search" class="btn btn-primary">Search</button></div>
 		</form>
