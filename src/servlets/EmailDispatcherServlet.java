@@ -21,7 +21,6 @@ public class EmailDispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = 8367164284034569433L;
 
 	String senderEmail = "mpdl_dbapp@mpdl.mpg.de";
-	String host = System.getProperty("mailHost");
 	String port = "25";
 	String username;
 	String password;
@@ -32,6 +31,7 @@ public class EmailDispatcherServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String host = System.getProperty("mailHost");
 		String[] recipient = request.getParameterValues("recipients");
 		String subject = request.getParameter("subject");
 		String content = request.getParameter("msgBody");
@@ -59,6 +59,7 @@ public class EmailDispatcherServlet extends HttpServlet {
 			exc.printStackTrace();
 		}
 		finally {
+			errors.append(host);
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
 			request.setAttribute("subject", subject);

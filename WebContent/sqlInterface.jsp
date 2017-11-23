@@ -28,7 +28,7 @@
 						<h2>SQL Interface</h2>
 						<div class="jumbotron">
 						Enter a SQL query in PostgreSQL syntax:
-						<form method="post" action="QueryServlet">
+						<form method="post" action="CustomQueryServlet">
 							<p><textarea class="form-control" id="sqlQuery" name="query" rows=6 cols=42 maxlength=400 required></textarea></p>
 							<p><button type="submit" name="custom_query" class="btn btn-primary" value="Send query">Send query</button></p>
 							<%@ include file="../WEB-INF/include/footer.jsp" %>

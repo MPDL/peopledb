@@ -123,7 +123,6 @@ public class QueryServlet extends HttpServlet {
 			if (resultData != null) try { resultData.close(); } catch (SQLException exc) {}
 	        if (searchStatement != null) try { searchStatement.close(); } catch (SQLException exc) {}
 		}
-//		}
 	}
 	
 	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
