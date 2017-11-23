@@ -31,7 +31,7 @@ public class EmailDispatcherServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String host = System.getProperty("mailHost");
+		String host = System.getenv("mailHost");
 		String[] recipient = request.getParameterValues("recipients");
 		String subject = request.getParameter("subject");
 		String content = request.getParameter("msgBody");
@@ -59,7 +59,6 @@ public class EmailDispatcherServlet extends HttpServlet {
 			exc.printStackTrace();
 		}
 		finally {
-			errors.append(host);
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
 			request.setAttribute("subject", subject);
