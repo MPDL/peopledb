@@ -7,6 +7,9 @@
 					<a class="nav-link" href="ViewAllServlet"><i class="fa fa-address-book"></i>View all members</a>
 				</li>
 				<li class="nav-item">
+					<a class="nav-link" href="importData.jsp"><i class="fa fa-upload"></i>Import data</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link" href="advancedSearch.jsp"><i class="fa fa-search"></i>Advanced search</a>
 				</li>
 				<li class="nav-item">

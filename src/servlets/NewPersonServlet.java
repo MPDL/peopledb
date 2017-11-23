@@ -89,7 +89,7 @@ public class NewPersonServlet extends HttpServlet {
 				if (personId == 0) {
 					synchronized (this) {
 						insertStatement = connection.createStatement();
-						insertStatement.executeUpdate("INSERT INTO person (deleted) VALUES (true)");				
+						insertStatement.executeUpdate("INSERT INTO person (deleted) VALUES (true)");
 						idStatement = connection.createStatement();
 						idResult = insertStatement.executeQuery("SELECT MAX(person_id) AS person_id FROM person");
 						

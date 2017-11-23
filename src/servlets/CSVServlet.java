@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -31,9 +33,10 @@ public class CSVServlet extends HttpServlet {
 		String sql = request.getParameter("export_csv");
 		
 		if (sql != null) {
+			String[] toExport = request.getParameterValues("toExport");
+			sql = buildExportQuery(sql, toExport);
 			exportResults(sql, response);
 		}
-		
 	}
 	
 	private void exportResults(String sql, HttpServletResponse response) {
@@ -42,6 +45,7 @@ public class CSVServlet extends HttpServlet {
 		
 		ResultSet resultData = null;
 		Statement searchStatement = null;
+		String date = LocalDate.now(ZoneId.of("Europe/Berlin")).toString();
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			searchStatement = connection.createStatement();
@@ -50,7 +54,7 @@ public class CSVServlet extends HttpServlet {
 			
 			response.setContentType("text/csv; charset=utf-8");
 			response.setCharacterEncoding("UTF-8");
-		    response.setHeader("Content-Disposition", "attachment; filename=\"result_export.csv\"");
+		    response.setHeader("Content-Disposition", "attachment; filename=\"peopleDB_export_" + date + ".csv\"");
 			OutputStream outStream = response.getOutputStream();
 			writeToStream(resultData, outStream);
 		}
@@ -66,7 +70,7 @@ public class CSVServlet extends HttpServlet {
 	
 	private void writeToStream(ResultSet resultData, OutputStream outStream) {
 		try {
-			// write file header
+			// write file header: database columns
 			StringBuilder content = new StringBuilder();
 			ResultSetMetaData metadata = resultData.getMetaData();
 			int columns = metadata.getColumnCount();
@@ -82,11 +86,12 @@ public class CSVServlet extends HttpServlet {
 				}
 			}
 			
-			// write data
+			// write data: database entries
 			while (resultData.next()) {
 				for (int i = 1; i <= columns; i++) {
 					String columnValue = resultData.getString(i);
-					content.append(columnValue);
+					if (columnValue != null)
+						content.append(columnValue);
 					if (i < columns) {
 						content.append(",");
 					}
@@ -106,5 +111,24 @@ public class CSVServlet extends HttpServlet {
 			if (resultData != null) try { resultData.close(); } catch (SQLException exc) {}
 		}
 		
+	}
+	
+	/**
+	 *  Export only selected columns
+	 */
+	private String buildExportQuery(String nested, String[] columns) {
+		StringBuilder sql = new StringBuilder();
+		String tableAlias = "nestedQuery";
+		
+		sql.append("SELECT ");
+		for (String colName : columns) {
+			sql.append(tableAlias).append(".").append(colName);
+			sql.append(",");
+		}
+		sql.delete(sql.length() - 1, sql.length());
+		sql.append(" FROM ");
+		sql.append("(").append(nested).append(")").append(" AS ").append(tableAlias);
+		
+		return sql.toString();
 	}
 }

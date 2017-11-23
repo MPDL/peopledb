@@ -79,6 +79,10 @@ public class NewGroupServlet extends HttpServlet {
 		if (!StringUtils.isAlphanumericSpace(gName)) {
 			throw new SQLException("Invalid character in property group name.");
 		}
+		// group names have a character limit. TODO increase limit and add proper CSS line breaks
+		if (gName.length() > 60) {
+			throw new SQLException("Group name is too long. Maximal length: 60 characters.");
+		}
 	}
 	
 }

@@ -52,7 +52,8 @@ public class DeleteUserServlet extends HttpServlet {
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
 			
-			getServletContext().getRequestDispatcher("/deletedUser.jsp").forward(request, response);
+//			getServletContext().getRequestDispatcher("/deletedUser.jsp").forward(request, response);
+			response.sendRedirect("/people/ViewAllServlet");
 			
 	        if (statement != null) try { statement.close(); } catch (SQLException exc) {}
 		}

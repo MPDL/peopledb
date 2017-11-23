@@ -38,7 +38,7 @@
 						</c:forEach>
 						</select></td></tr>
 					<tr><td><label>Property name</label></td>
-					<td><input class="form-control" type="text" name="property_name" required/></td></tr>
+					<td><input class="form-control" type="text" name="property_name" maxlength=40 required/></td></tr>
 					<tr><td><label>Data type</label></td>
 					<td>
 					<select class="form-control" name="data_type">

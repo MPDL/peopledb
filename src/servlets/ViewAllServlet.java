@@ -29,6 +29,8 @@ public class ViewAllServlet extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//		StringBuilder messages = new StringBuilder();
+		String messages = request.getParameter("message");
 		StringBuilder errors = new StringBuilder();
 		
 		LinkedList<String> nameList = new LinkedList<String>();
@@ -43,6 +45,7 @@ public class ViewAllServlet extends HttpServlet {
 			getPropertyNames(propertySet, nameList, dbNameList);
 			
 			searchStatement = connection.createStatement();
+//			String sql = "SELECT person.* FROM person, person_intern WHERE (person.person_id=person_intern.person_id AND person_intern.deleted = FALSE) ORDER BY " + dbNameList.getFirst();
 			String sql = "SELECT * FROM person WHERE (deleted = FALSE) ORDER BY " + dbNameList.getFirst();
 			
 			resultData = dispatchRequest(searchStatement, sql, null, errors);
@@ -55,6 +58,7 @@ public class ViewAllServlet extends HttpServlet {
 			exc.printStackTrace();
 		}
 		finally {
+			request.setAttribute("message", messages);
 			request.setAttribute("error", errors.toString());
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);

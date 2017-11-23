@@ -1,4 +1,4 @@
-@charset "ISO-8859-1";
+@charset "UTF-8";
 body {
 	padding-top: 70px;
 }
@@ -72,11 +72,19 @@ button {
 
 
 h2 {
-  margin-bottom: 40px;
+	margin-bottom: 40px;
+	overflow-wrap: break-word;
+	word-wrap:break-word;
+	max-width: 40em;
+	max-width: 100ch;
 }
 
 h3 {
-  margin-bottom: 20px;
+	margin-bottom: 20px;
+	overflow-wrap: break-word;
+	word-wrap:break-word;
+	max-width: 40em;
+	max-width: 100ch;
 }
 
 .jumbotron {
@@ -116,4 +124,15 @@ th {
 .table {
 	border-collapse: separate;
     border-spacing: 10px;
+}
+
+.headerCheckbox {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+label {
+	max-width: 20ch;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
 }

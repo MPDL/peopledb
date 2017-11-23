@@ -46,7 +46,7 @@ public class BatchEditResultServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propStatement = connection.createStatement();
-			propertySet = propStatement.executeQuery("SELECT property.* FROM property, property_group WHERE property_group = property_group_id and property_group.name = 'Basic Data'");
+			propertySet = propStatement.executeQuery("SELECT property.* FROM property, property_group WHERE property_group = property_group_id");
 			
 			
 			while (propertySet.next()) {
@@ -108,6 +108,7 @@ public class BatchEditResultServlet extends HttpServlet {
 		finally {
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
+			request.setAttribute("current_query", request.getParameter("current_query"));
 			request.setAttribute("result", result);
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);

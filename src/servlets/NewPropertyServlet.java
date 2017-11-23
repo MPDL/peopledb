@@ -174,5 +174,8 @@ public class NewPropertyServlet extends HttpServlet {
 		if (!StringUtils.isAlphanumericSpace(pName)) {
 			throw new SQLException("Invalid character in property name.");
 		}
+		if (pName.length() > 40) {
+			throw new SQLException("Property name is too long. Maximal length is 40 characters.");
+		}
 	}
 }

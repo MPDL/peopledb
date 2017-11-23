@@ -11,6 +11,20 @@
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/font-awesome.min.css" rel="stylesheet">
 <link href="css/boxAligner.css" rel="stylesheet">
+<script>
+	// blocks page redirect if not everything is chosen
+	function assertNotAllBlank(name) {
+		var toChoose = document.getElementsByName(name);
+		var toChooseLength = toChoose.length;
+		for (i = 0; i < toChooseLength; i++) {
+			if (toChoose[i].checked == true) {
+				return true;
+			}
+		}
+		alert('No entries are selected.');
+		return false;	
+	}
+</script>
 </head>
 <body>
 	<div class="vertical-center" align="center">
@@ -72,8 +86,8 @@
 					 	<table class="table-striped table-hover table-responsive" style="white-space: nowrap;"> 
 					 	<thead> 
 					 		<th class="col-md-2"></th>
-					 		<c:forEach items="${nameList}" var="colHead">
-					 			<th class="text-center">${colHead}</th>
+					 		<c:forEach items="${nameList}" var="colHead" varStatus="status">
+					 			<th class="text-center">${colHead}<input type="checkbox" name="toExport" value="${dbNameList[status.index]}" class="headerCheckbox" checked/></th>
 					 		</c:forEach>
 					 	</thead> 
 					 	<c:forEach items="${resultData.rows}" var="currentRow">
@@ -91,9 +105,9 @@
 					 	</c:forEach>
 						</table>
 						<div class="result-options">
-							<button id="sendMail" type="submit" class="btn btn-primary"><i class="fa fa-envelope fa-fw"></i>Email selected</button>
-							<button name="editSelected" type="submit" class="btn btn-primary" formmethod="post" formaction="BatchEditServlet" value=1><i class="fa fa-pencil fa-fw"></i>Edit selected</button>
-							<button name="export_csv" type="submit" class="btn btn-primary" formmethod="get" formaction="CSVServlet" value="${current_query}"><i class="fa fa-file fa-fw"></i>Export as CSV</button>
+							<button id="sendMail" type="submit" class="btn btn-primary" onclick="return assertNotAllBlank('toChoose');"><i class="fa fa-envelope fa-fw"></i>Email selected</button>
+							<button name="editSelected" type="submit" class="btn btn-primary" formmethod="post" formaction="BatchEditServlet" value=1 onclick="return assertNotAllBlank('toChoose');"><i class="fa fa-pencil fa-fw"></i>Edit selected</button>
+							<button name="export_csv" type="submit" class="btn btn-primary" formmethod="get" formaction="CSVServlet" value="${current_query}" onclick="return assertNotAllBlank('toChoose') && assertNotAllBlank('toExport');"><i class="fa fa-file fa-fw"></i>Export selected as CSV</button>
 						</div>
 						</form>
 					</c:when>

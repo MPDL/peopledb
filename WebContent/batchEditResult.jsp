@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="ISO-8859-1"%>
+    pageEncoding="UTF-8"%>
 <%@ include file="../WEB-INF/include/db.jsp" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
@@ -45,6 +45,10 @@
 	 		</tr>
 	 	</c:forEach>
 	</table>
+	<form method="get" action="QueryServlet"></form>
+	 		<input type="hidden" name="current_query" value="${current_query}">
+	 		<button type="submit" class="btn btn-default btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i>Back to search results</button>
+	</form>
 	</div>
 	</c:otherwise>
 	</c:choose>

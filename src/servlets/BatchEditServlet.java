@@ -89,6 +89,7 @@ public class BatchEditServlet extends HttpServlet {
 		finally {
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
+			request.setAttribute("current_query", request.getParameter("current_query"));
 			request.setAttribute("result", result);
 			request.setAttribute("map", propertyMap);
 			request.setAttribute("widgets", widgets);

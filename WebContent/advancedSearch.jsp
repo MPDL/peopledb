@@ -9,6 +9,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../WEB-INF/include/db.jsp" %>
 <%
+	// TODO: convert to JSTL, model is in batch edit page
 	// get a list of all available properties
 	int widgets;
 	if (request.getParameter("more_criteria") == null) {
@@ -37,7 +38,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Advanced Search</title>
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/font-awesome.min.css" rel="stylesheet">
@@ -51,6 +52,15 @@ function changeInputType(sel, id) {
 	}
 	else {
 		inputBox.type = sel.value.split('$')[1]
+	}
+}
+function disableIllegalInputs(compareSel, matchSelID) {
+	var matchSel = document.getElementById('queryMatch' + matchSelID);
+	if (compareSel.value === 'biggerOrEqual' || compareSel.value === 'smallerOrEqual') {
+		matchSel.disabled = true;
+	}
+	else {
+		matchSel.disabled = false;
 	}
 }
 </script>
@@ -94,7 +104,7 @@ function changeInputType(sel, id) {
 			</select>
 			</td>
 			<td>
-			<select class="form-control form-control-inline" name="lexicographic<%= +widget %>">
+			<select class="form-control form-control-inline" name="lexicographic<%= +widget %>" onchange="disableIllegalInputs(this,<%= widget %>)">
 				<option value="is" 
 					<% if (request.getParameter("lexicographic" + widget) != null && request.getParameter("lexicographic" + widget).equals("is")) { %> 
 						selected 
@@ -113,18 +123,38 @@ function changeInputType(sel, id) {
 					<% } %>  ><=</option>
 			</select>
 			</td>
+			<%-- Choose if exact or partial match --%>
 			<td>
+				<select class="form-control form-control-inline" id="queryMatch<%= +widget %>" name="queryMatch<%= +widget %>">
+					<option value="matchExact"
+					<% if (request.getParameter("queryMatch" + widget) != null && request.getParameter("queryMatch" + widget).equals("matchExact")) { %> 
+						selected 
+					<% } %>
+					>exactly</option>
+					<option value="matchLike"
+					<% if (request.getParameter("queryMatch" + widget) != null && request.getParameter("queryMatch" + widget).equals("matchLike")) { %> 
+						selected 
+					<% } %>
+					>like</option>
+				</select>
+			</td>
+			<td>
+			<% if (widgets == 1) { %>
+				<input required class="form-control form-control-inline" type="text" id="value<%=+widget %>" name="value<%=+widget %>" value="<%= request.getParameter("value" + widget) != null ? request.getParameter("value" + widget) : "" %>"/>
+			<% } 
+				else {%>
 			<input class="form-control form-control-inline" type="text" id="value<%=+widget %>" name="value<%=+widget %>" value="<%= request.getParameter("value" + widget) != null ? request.getParameter("value" + widget) : "" %>"/>
+			<% } %>
 			</td>
 			</tr>
 			<% } %>
 			</table>
 			<div class="saveGroup">
 				<input type="checkbox" name="show_deleted" value="true" checked/> Show deleted
-				<button type="submit" name="more_criteria" value=<%= ++widgets %> class="btn btn-outline-primary" formmethod="get" formaction="advancedSearch.jsp"><i class="fa fa-plus icon-center"></i></button> Add criteria
 			</div>
 			<div class="saveGroup"><button type="submit" name="advanced_search" value="Search" class="btn btn-primary">Search</button></div>
 		</form>
+		<button type="submit" name="more_criteria" value=<%= ++widgets %> class="btn  btn-default btn-sm saveGroup" formmethod="get" formaction="advancedSearch.jsp"><i class="fa fa-plus icon-center"></i>Add criteria</button>
 		</div>
 		</div>
 		<%@ include file="../WEB-INF/include/footer.jsp" %>

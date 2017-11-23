@@ -32,7 +32,7 @@
 					<form method="post" action="NewGroupServlet">
 					<table>
 						<tr><td><label for="group_name">Property group name</label></td>
-						<td><input class="form-control" type="text" name="group_name" required/></td></tr>
+						<td><input class="form-control" type="text" name="group_name" maxlength=40 required/></td></tr>
 						<tr><td></td></tr>
 					</table>
 					<div class="saveGroup">

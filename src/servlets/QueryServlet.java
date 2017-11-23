@@ -112,8 +112,8 @@ public class QueryServlet extends HttpServlet {
 		}
 		finally {
 			request.setAttribute("message", messages.toString());
-			request.setAttribute("current_query", messages.toString());
 			request.setAttribute("error", errors.toString());
+			request.setAttribute("current_query", messages.toString());
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);
 			request.setAttribute("resultData", result);
@@ -123,6 +123,7 @@ public class QueryServlet extends HttpServlet {
 			if (resultData != null) try { resultData.close(); } catch (SQLException exc) {}
 	        if (searchStatement != null) try { searchStatement.close(); } catch (SQLException exc) {}
 		}
+//		}
 	}
 	
 	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
@@ -177,6 +178,7 @@ public class QueryServlet extends HttpServlet {
 	 * Mutates @param sql
 	 */
 	private StringBuilder beginRequest(final HttpServletRequest request, StringBuilder sql) {
+//		sql.append("SELECT person.* FROM person, person_intern WHERE (person.person_id=person_intern.person_id) AND (");
 		sql.append("SELECT * FROM person WHERE (");
 		
 		String showDeleted = request.getParameter("show_deleted");
@@ -236,10 +238,10 @@ public class QueryServlet extends HttpServlet {
 			}
 			// form request according to lexicographic input
 			String compareArg = request.getParameter("lexicographic" + i);
+			String matchArg = request.getParameter("queryMatch" + i);
+			// add matching to query style with appropriate types
 			sql.append(searchTerm);
-			sql.append(getCompareArg(compareArg));
-			sql.append(DBConnection.dbQueryEscape(parameterValue));
-			sql.append("'");
+			sql.append(getComparator(DBConnection.dbQueryEscape(parameterValue), compareArg, matchArg, type));
 			sql.append(" AND ");
 		}
 		sql = new StringBuilder(StringUtils.substringBeforeLast(sql.toString(), "AND"));
@@ -248,18 +250,27 @@ public class QueryServlet extends HttpServlet {
 		return sql;
 	}
 	
-	private String getCompareArg(String compareArg) {
-		switch (compareArg) {
-			case "is":
-				return " = '";
-			case "isnot":
-				return " != '";
-			case "biggerOrEqual":
-				return " >= '";
-			case "smallerOrEqual":
-				return " <= '";
-			default:
-				return " ILIKE '";
+	private String getComparator(String parameterValue, String compareArg, String matchArg, String type) {
+		// TODO patterns and enums
+		// (I)LIKE supported only for type varchar
+		if (type.equals("character_varying") && compareArg.equals("is") && matchArg.equals("matchLike")) {
+			return " ILIKE '%" + parameterValue + "%' ";
 		}
+		else if (type.equals("character_varying") && compareArg.equals("isnot") && matchArg.equals("matchLike")) {
+			return " NOT ILIKE '%" + parameterValue + "%' ";
+		}
+		else if (compareArg.equals("is")) {
+			return " = '" + parameterValue + "' ";
+		}
+		else if (compareArg.equals("isnot")) {
+			return " != '" + parameterValue + "' ";
+		}
+		else if (compareArg.equals("biggerOrEqual")) {
+			return " >= '" + parameterValue + "' ";
+		}
+		else if (compareArg.equals("smallerOrEqual")) {
+			return " <= '" + parameterValue + "' ";
+		}
+		return " = '" + parameterValue + "' ";
 	}
 }
