@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -40,10 +42,13 @@ public class CustomQueryServlet extends HttpServlet {
 		StringBuilder errors = new StringBuilder();
 		StringBuilder messages = new StringBuilder();
 		
+		List<String> nameList = new LinkedList<>();
+		List<String> dbNameList = new LinkedList<>();
+		
 		Statement customStatement = null;
 		ResultSet resultData = null;
+		ResultSet propertySet = null;
 		Result result = null;
-		int updatedRows = 0;
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			customStatement = connection.createStatement();
@@ -53,21 +58,25 @@ public class CustomQueryServlet extends HttpServlet {
 			if ("Send query".equals(request.getParameter("custom_query")) && !"".equals(request.getParameter("query"))) {
 				sql.append(request.getParameter("query"));
 				if (queryInvalid(sql.toString())) {
-					errors.append("Unsupported operation: " + sql.toString());
+					throw new SQLException("Unsupported operation: " + sql.toString());
 				}
 			}
 			else {
 				// empty input: server-side validation
-				errors.append("No input was provided.");
+				throw new SQLException("No input was provided.");
 			}
 			
+			System.out.println(errors.toString());
 			if (errors.length() == 0) {
 				String query = sql.toString();
-				if (StringUtils.containsIgnoreCase(query, "SELECT FROM")) {
+				if (StringUtils.containsIgnoreCase(query, "SELECT") && StringUtils.containsIgnoreCase(query, "FROM")) {
 					resultData = customStatement.executeQuery(query);
 					if (resultData != null) {
 						result = ResultSupport.toResult(resultData);
 					}
+					
+					propertySet = getPropertySet(connection);
+					getPropertyNames(propertySet, nameList, dbNameList);
 				}
 				else {
 					customStatement.executeUpdate(query);
@@ -88,6 +97,8 @@ public class CustomQueryServlet extends HttpServlet {
 			
 			if (result != null) {
 				request.setAttribute("resultData", result);
+				request.setAttribute("nameList", nameList);
+				request.setAttribute("dbNameList", dbNameList);
 				getServletContext().getRequestDispatcher("/results.jsp").forward(request, response);
 			}
 			else {
@@ -96,12 +107,33 @@ public class CustomQueryServlet extends HttpServlet {
 			
 			if (resultData != null) try { resultData.close(); } catch (SQLException exc) {}
 			if (customStatement != null) try { customStatement.close(); } catch (SQLException exc) {}
+			if (propertySet != null) try { propertySet.close(); } catch (SQLException exc) {}
 		}
 	}
 	
 	public boolean queryInvalid(String sql) {
-		return StringUtils.containsIgnoreCase(sql.toString(), "delete") || StringUtils.containsIgnoreCase(sql.toString(), "drop")
-				|| StringUtils.containsIgnoreCase(sql.toString(), "alter") || StringUtils.containsIgnoreCase(sql.toString(), "grant")
-				|| StringUtils.containsIgnoreCase(sql.toString(), "revoke");
+		return (StringUtils.containsIgnoreCase(sql.toString(), "delete") && !StringUtils.containsIgnoreCase(sql.toString(), "deleted"))
+				|| StringUtils.containsIgnoreCase(sql.toString(), "drop") || StringUtils.containsIgnoreCase(sql.toString(), "alter") 
+				|| StringUtils.containsIgnoreCase(sql.toString(), "grant")|| StringUtils.containsIgnoreCase(sql.toString(), "revoke");
 	}
+	
+	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
+		Statement propStatement = connection.createStatement();
+		String selectPropertyQuery = "SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id ASC";
+		return propStatement.executeQuery(selectPropertyQuery);
+	}
+	
+	/**
+	 * Mutates @param nameList and @param dbNameList
+	 * @throws SQLException 
+	 */
+	private void getPropertyNames(ResultSet propertySet, List<String> names, List<String> dbNames) throws SQLException {
+		while (propertySet.next()) {
+			String propertyName = propertySet.getString("name");
+			String propertyDbName = propertySet.getString("db_name");
+			names.add(propertyName);
+			dbNames.add(propertyDbName);
+		}
+	}
+	
 }

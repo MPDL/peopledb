@@ -12,7 +12,7 @@
 <link href="css/font-awesome.min.css" rel="stylesheet">
 <link href="css/boxAligner.css" rel="stylesheet">
 <script>
-	// blocks page redirect if not everything is chosen
+	// blocks page redirect if nothing is chosen
 	function assertNotAllBlank(name) {
 		var toChoose = document.getElementsByName(name);
 		var toChooseLength = toChoose.length;
