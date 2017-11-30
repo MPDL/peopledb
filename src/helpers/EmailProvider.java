@@ -19,13 +19,13 @@ public class EmailProvider {
 			String recipients, String subjectText, String messageText) throws AddressException,
     MessagingException {
 		Properties properties = System.getProperties();
-		properties.put("mail.transport.protocol", "smtp");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.auth", "false");
-		properties.put("mail.smtp.from", sender);
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", port);
+		properties.setProperty("mail.transport.protocol", "smtp");
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+        properties.setProperty("mail.smtp.ssl.enable", "true");
+        properties.setProperty("mail.smtp.auth", "false");
+		properties.setProperty("mail.smtp.from", sender);
+        properties.setProperty("mail.smtp.host", host);
+        properties.setProperty("mail.smtp.port", port);
 
         Session session = Session.getInstance(properties);
         
