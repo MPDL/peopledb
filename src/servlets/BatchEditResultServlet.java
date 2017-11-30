@@ -30,6 +30,9 @@ public class BatchEditResultServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String current_query = request.getParameter("current_query");
+		request.setAttribute("current_query", current_query);
+		
 		StringBuilder messages = new StringBuilder();
 		StringBuilder errors = new StringBuilder();
 		
@@ -46,7 +49,7 @@ public class BatchEditResultServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propStatement = connection.createStatement();
-			propertySet = propStatement.executeQuery("SELECT property.* FROM property, property_group WHERE property_group = property_group_id");
+			propertySet = propStatement.executeQuery(DBConnection.getPropertyQuery());
 			
 			
 			while (propertySet.next()) {
@@ -73,16 +76,21 @@ public class BatchEditResultServlet extends HttpServlet {
 					break;
 				}
 				String property = StringUtils.split(propertyAndType, '$')[0];
+				String type = StringUtils.split(propertyAndType, '$')[1];
 				String searchTerm = DBConnection.dbEscape(property);
+				String newValue = DBConnection.dbQueryEscape(getBatchEditValue(request, i));
 				if (sql.toString().contains(searchTerm)) {
 					errors.append("A property has been specified twice. Please review your inputs.");
 					break;
 				}
 				sql.append(searchTerm);
 				sql.append(" = ");
-				sql.append("'");
-				sql.append(DBConnection.dbQueryEscape(request.getParameter("new_prop" + i)));
-				sql.append("'");
+				if (type.equals("boolean")) {
+					sql.append(newValue);
+				}
+				else {
+					sql.append("'").append(newValue).append("'");
+				}
 				sql.append(" , ");
 			}
 			sql = new StringBuilder(StringUtils.substringBeforeLast(sql.toString(), ","));
@@ -108,7 +116,6 @@ public class BatchEditResultServlet extends HttpServlet {
 		finally {
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
-			request.setAttribute("current_query", request.getParameter("current_query"));
 			request.setAttribute("result", result);
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);
@@ -121,5 +128,15 @@ public class BatchEditResultServlet extends HttpServlet {
 	        if (selectStatement != null) try { selectStatement.close(); } catch (SQLException exc) {}
 	        if (propStatement != null) try { propStatement.close(); } catch (SQLException exc) {}
 		}
+	}
+	
+	private String getBatchEditValue(HttpServletRequest request, int widget) {
+		if (request.getParameter("new_prop" + widget) != null && !"".equals(request.getParameter("new_prop" + widget))) {
+			return request.getParameter("new_prop" + widget);
+		}
+		if (request.getParameter("booleanSelect" + widget) != null) {
+			return request.getParameter("booleanSelect" + widget);
+		}
+		throw new IllegalArgumentException("No input was provided for parameter number " + widget + ".");
 	}
 }

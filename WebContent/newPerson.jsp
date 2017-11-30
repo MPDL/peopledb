@@ -54,6 +54,7 @@
 										<c:otherwise>
 											<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE"/>Yes</label>
 												<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label>
+												<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="NULL" required/>Unknown</label>
 											</td>
 										</c:otherwise>
 									</c:choose>

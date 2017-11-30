@@ -28,6 +28,10 @@
 			</c:when>
 			<c:otherwise>
 			<h2>Edit person</h2>
+			<form method="post" action="QueryServlet">
+				<input name="current_query" type="hidden" value="${current_query}"/>
+				<button type="submit" class="btn btn-primary saveGroup"><i class="fa fa-arrow-left"></i>Back to results</button>
+			</form>
 			<div class="jumbotron">
 			<form method="post" action="EditPersonServlet">
 				<c:forEach items="${personData.rows}" var="personInfo">
@@ -65,17 +69,20 @@
 										</c:when>
 										<c:otherwise>
 										<c:choose>
-												<c:when test="${fn:toUpperCase(personInfo[col]) eq 'TRUE'}">
+												<c:when test="${fn:toUpperCase(personInfo[col]) eq TRUE}">
 													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE" checked="checked"/>Yes</label>
-													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label></td>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="NULL"/>Unknown</label></td>
 												</c:when>
-												<c:when test="${fn:toUpperCase(personInfo[col]) eq 'FALSE'}">
+												<c:when test="${fn:toUpperCase(personInfo[col]) eq FALSE}">
 													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE"/>Yes</label>
-													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE" checked="checked"/>No</label></td>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE" checked="checked"/>No</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="NULL"/>Unknown</label></td>
 												</c:when>
 												<c:otherwise>
 													<td><label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="TRUE"/>Yes</label>
-													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label></td>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="FALSE"/>No</label>
+													<label class="radio-inline"><input type="radio" id="${current.db_name}" name="${current.db_name}" value="NULL" checked="checked"/>Unknown</label></td>
 												</c:otherwise>
 											</c:choose>
 										</c:otherwise>
@@ -107,11 +114,12 @@
 							</tr>
 					</c:forEach>
 					</table>
-					<button type="submit" class="btn btn-primary" name="save" value="Save">Save</button>
+					<input name="current_query" type="hidden" value="${current_query}"/>
+					<button type="submit" class="btn btn-primary saveGroup" name="save" value="Save"><i class="fa fa-floppy-o" aria-hidden="true"></i>Save</button>
 				</c:forEach>
 			</form>
 			<form method="post" action="DeleteUserServlet" onsubmit="return confirm('Are you sure you want to delete this user?');">
-				<button type="submit" class="btn btn-danger" name="delete_user" value="${person_id}">Delete person</button>
+				<button type="submit" class="btn btn-danger saveGroup" name="delete_user" style="margin-top: 10px;" value="${person_id}"><i class="fa fa-trash-o" aria-hidden="true"></i>Delete</button>
 			</form>
 			</div>
 			</c:otherwise>

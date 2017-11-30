@@ -60,8 +60,12 @@ public class QueryServlet extends HttpServlet {
 			searchStatement = connection.createStatement();
 			StringBuilder sql = new StringBuilder();
 			
+			// process old query
+			if (request.getParameter("current_query") != null) {
+				sql.append(request.getParameter("current_query"));
+			}
 			// search within results
-			if (request.getParameter("current_query") != null && "nested".equals(request.getParameter("nested_search")) && !"".equals(request.getParameter("query"))) {
+			else if (request.getParameter("current_query") != null && "nested".equals(request.getParameter("nested_search")) && !"".equals(request.getParameter("query"))) {
 				String currentQuery = request.getParameter("current_query");
 				sql.append(StringUtils.substringBeforeLast(currentQuery, "ORDER BY"));
 				if (StringUtils.containsIgnoreCase(currentQuery, "WHERE")) {
@@ -82,7 +86,7 @@ public class QueryServlet extends HttpServlet {
 				sql = appendCriteria(request, sql, dbNameList, typeList);
 			}
 			// advanced search
-			else if ("Search".equals(request.getParameter("advanced_search")) && !"".equals(request.getParameter("value1"))) {
+			else if ("Search".equals(request.getParameter("advanced_search")) && (!"".equals(request.getParameter("value1")) || !"".equals(request.getParameter("booleanSelect1")))) {
 				sql = beginRequest(request, sql);
 				sql = buildAdvancedQuery(request, sql, dbNameList.getFirst());
 			}
@@ -127,7 +131,7 @@ public class QueryServlet extends HttpServlet {
 	
 	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
 		Statement propStatement = connection.createStatement();
-		String selectPropertyQuery = "SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id ASC";
+		String selectPropertyQuery = DBConnection.getPropertyQuery();
 		return propStatement.executeQuery(selectPropertyQuery);
 	}
 	
@@ -230,7 +234,7 @@ public class QueryServlet extends HttpServlet {
 			String property = StringUtils.split(propertyAndType, '$')[0];
 			String type = StringUtils.split(propertyAndType, '$')[1];
 			String searchTerm = DBConnection.dbEscape(property);
-			String parameterValue = request.getParameter("value" + i);
+			String parameterValue = getSearchParameterValue(request, i);
 			// validate input
 			if (!new InputValidator().validateInput(parameterValue, type)) {
 				throw new SQLException("Invalid value '" + parameterValue  + "' for parameter '" + searchTerm + "' of type '" + type + "'.");
@@ -258,6 +262,19 @@ public class QueryServlet extends HttpServlet {
 		else if (type.equals("character_varying") && compareArg.equals("isnot") && matchArg.equals("matchLike")) {
 			return " NOT ILIKE '%" + parameterValue + "%' ";
 		}
+		else if (type.equals("character_varying") && compareArg.equals("is") && matchArg.equals("matchExact")) {
+			return " ILIKE '" + parameterValue + "' ";
+		}
+		// if the "is" search is case-insensitive, the "is not" search should be case-insensitive as well
+		else if (type.equals("character_varying") && compareArg.equals("isnot") && matchArg.equals("matchExact")) {
+			return " NOT ILIKE '" + parameterValue + "' ";
+		}
+		else if (type.equals("boolean") && compareArg.equals("is")) {
+			return " IS " + parameterValue;
+		}
+		else if (type.equals("boolean") && compareArg.equals("isnot")) {
+			return " IS NOT " + parameterValue;
+		}
 		else if (compareArg.equals("is")) {
 			return " = '" + parameterValue + "' ";
 		}
@@ -271,5 +288,15 @@ public class QueryServlet extends HttpServlet {
 			return " <= '" + parameterValue + "' ";
 		}
 		return " = '" + parameterValue + "' ";
+	}
+	
+	private String getSearchParameterValue(HttpServletRequest request, int widget) {
+		if (request.getParameter("value" + widget) != null && !"".equals(request.getParameter("value" + widget))) {
+			return request.getParameter("value" + widget);
+		}
+		if (request.getParameter("booleanSelect" + widget) != null) {
+			return request.getParameter("booleanSelect" + widget);
+		}
+		throw new IllegalArgumentException("No input was provided for parameter number " + widget + ".");
 	}
 }

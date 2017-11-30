@@ -15,6 +15,7 @@ import java.util.SortedMap;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,7 +33,11 @@ import helpers.InputValidator;
 public class NewPersonServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -8631735889250182877L;
-
+	
+	public void init() {
+		ServletContext context = getServletContext();
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		StringBuilder messages = new StringBuilder();
 		StringBuilder errors = new StringBuilder();
@@ -43,7 +48,7 @@ public class NewPersonServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propStatement = connection.createStatement();
-			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id ASC");
+			propertySet = propStatement.executeQuery(DBConnection.getPropertyQuery());
 			propSet  = ResultSupport.toResult(propertySet);
 		}
 		catch (SQLException | ClassNotFoundException exc) {
@@ -80,7 +85,7 @@ public class NewPersonServlet extends HttpServlet {
 		try {
 			connection = DBConnection.getConnection();
 			propStatement = connection.createStatement();
-			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name");
+			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id ASC");
 			propSet  = ResultSupport.toResult(propertySet);
 			
 			connection.setAutoCommit(false);
@@ -128,7 +133,12 @@ public class NewPersonServlet extends HttpServlet {
 							throw new SQLException();
 						}
 						
-						sql.append(parameterName).append("='").append(parameterValue).append("'");
+						if (parameterType.equals("boolean")) {
+							sql.append(parameterName).append("=").append(parameterValue);
+						}
+						else {
+							sql.append(parameterName).append("='").append(parameterValue).append("'");
+						}
 					}
 				}
 				

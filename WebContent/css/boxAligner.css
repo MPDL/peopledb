@@ -36,6 +36,11 @@ input, select, textarea {
 	margin: 0 auto;
 }
 
+.smallContainer {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
 i {
 	display: block;
 	margin-right: 5px;
@@ -119,20 +124,31 @@ h3 {
 
 th {
 	text-align: center;
+	overflow: hidden;
+	padding: 2em;
 }
 
-.table {
-	border-collapse: separate;
-    border-spacing: 10px;
+td {
+	overflow: hidden;
+	padding: 2em;
 }
+
+/* .table { */
+/*     border-spacing: 10px 10px !important; */
+/*     border-collapse:separate !important; */
+/* } */
 
 .headerCheckbox {
-	margin-left: 20px;
-	margin-right: 20px;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 label {
 	max-width: 20ch;
 	overflow-wrap: break-word;
 	word-wrap: break-word;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset;
 }

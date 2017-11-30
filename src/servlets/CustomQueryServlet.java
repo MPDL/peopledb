@@ -119,7 +119,7 @@ public class CustomQueryServlet extends HttpServlet {
 	
 	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
 		Statement propStatement = connection.createStatement();
-		String selectPropertyQuery = "SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id ASC";
+		String selectPropertyQuery = DBConnection.getPropertyQuery();
 		return propStatement.executeQuery(selectPropertyQuery);
 	}
 	

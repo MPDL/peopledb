@@ -73,7 +73,7 @@ public class ViewAllServlet extends HttpServlet {
 	
 	private ResultSet getPropertySet(Connection connection) throws ClassNotFoundException, SQLException {
 		Statement propStatement = connection.createStatement();
-		String selectPropertyQuery = "SELECT property.* FROM property, property_group WHERE property_group = property_group_id";
+		String selectPropertyQuery = DBConnection.getPropertyQuery();
 		return propStatement.executeQuery(selectPropertyQuery);
 	}
 	

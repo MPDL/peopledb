@@ -34,6 +34,9 @@ public class BatchEditServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String current_query = request.getParameter("current_query");
+		request.setAttribute("current_query", current_query);
+		
 		String[] checkValues = request.getParameterValues("toChoose");
 		int widgets = Integer.parseInt(request.getParameter("editSelected"));
 		
@@ -50,38 +53,36 @@ public class BatchEditServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			if (checkValues == null) {
-				errors.append("No entries were selected!");
+				throw new SQLException("No entries were selected!");
 			}
-			else {
-				StringBuilder selectedIDs = new StringBuilder("(");
-				for (String value : checkValues) {
-					selectedIDs.append(value.replace("person", ""));
-					selectedIDs.append(",");
-				}
-				selectedIDs.setCharAt(selectedIDs.length() - 1, ')');
-			
-				personStatement = connection.createStatement();
-				resultData = personStatement.executeQuery("SELECT person_id, basic_data_given_name, basic_data_family_name, basic_data_email FROM person WHERE person.person_id IN " + selectedIDs.toString());
-				
-				propStatement = connection.createStatement();
-				propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name");
-			
-				propertyMap = new LinkedHashMap<>();
-				
-				while (propertySet.next()) {
-					String groupName = propertySet.getString("group_name");
-					if (!propertyMap.containsKey(groupName)) {
-						propertyMap.put(groupName, new LinkedList<Triple<String, String, String>>());
-					}
-					String dbName = propertySet.getString("db_name");
-					String name = propertySet.getString("name");
-					String type = propertySet.getString("type");
-					
-					propertyMap.get(groupName).add(new ImmutableTriple<String, String, String>(dbName, type, name));
-				}
-				
-				result = ResultSupport.toResult(resultData);
+			StringBuilder selectedIDs = new StringBuilder("(");
+			for (String value : checkValues) {
+				selectedIDs.append(value.replace("person", ""));
+				selectedIDs.append(",");
 			}
+			selectedIDs.setCharAt(selectedIDs.length() - 1, ')');
+			
+			personStatement = connection.createStatement();
+			resultData = personStatement.executeQuery("SELECT person_id, basic_data_given_name, basic_data_family_name FROM person WHERE person.person_id IN " + selectedIDs.toString());
+				
+			propStatement = connection.createStatement();
+			propertySet = propStatement.executeQuery(DBConnection.getPropertyQuery());
+			
+			propertyMap = new LinkedHashMap<>();
+			
+			while (propertySet.next()) {
+				String groupName = propertySet.getString("group_name");
+				if (!propertyMap.containsKey(groupName)) {
+					propertyMap.put(groupName, new LinkedList<Triple<String, String, String>>());
+				}
+				String dbName = propertySet.getString("db_name");
+				String name = propertySet.getString("name");
+				String type = propertySet.getString("type");
+				
+				propertyMap.get(groupName).add(new ImmutableTriple<String, String, String>(dbName, type, name));
+			}
+			
+			result = ResultSupport.toResult(resultData);
 		}
 		catch (SQLException | ClassNotFoundException exc) {
 			errors.append(exc.getMessage());
@@ -89,7 +90,6 @@ public class BatchEditServlet extends HttpServlet {
 		finally {
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
-			request.setAttribute("current_query", request.getParameter("current_query"));
 			request.setAttribute("result", result);
 			request.setAttribute("map", propertyMap);
 			request.setAttribute("widgets", widgets);

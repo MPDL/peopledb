@@ -13,12 +13,25 @@
 <script>
 function changeInputType(sel, id) {
 	var inputBox = document.getElementById('new_prop' + id);
-	if (sel.value.split('$')[1] == 'decimal') {
-		inputBox.type = 'number';
-		inputBox.step='0.0001';
+	var valueSelect = document.getElementById('booleanSelect' + id);
+	if (sel.value.split('$')[1] == 'boolean') {
+		inputBox.required = false;
+		inputBox.style.display = 'none';
+		valueSelect.style.display = 'inline';
 	}
 	else {
-		inputBox.type = sel.value.split('$')[1]
+		if (id == 1) {
+			inputBox.required = true;
+		}
+		valueSelect.style.display = 'none';
+		inputBox.style.display = 'inline';
+		if (sel.value.split('$')[1] == 'decimal') {
+			inputBox.type = 'number';
+			inputBox.step='0.0001';
+		}
+		else {
+			inputBox.type = sel.value.split('$')[1]
+		}
 	}
 }
 </script>
@@ -80,20 +93,29 @@ function changeInputType(sel, id) {
 				<c:set var = "previousValue" scope = "session" value = "new_prop${widget}"/>
 				<c:choose>
 					<c:when test="${widgets eq 1}">
-						<input class="form-control" type="text" id="new_prop${widget}" name="new_prop${widget}" id="new_prop${widget}" value="${param[previousValue]}" required/>
+						<input required class="form-control" type="text" id="new_prop${widget}" name="new_prop${widget}" id="new_prop${widget}" value="${param[previousValue]}" required/>
+						<select required style="display: none;" class="form-control form-control-inline" id="booleanSelect${widget}" name="booleanSelect${widget}">
+							<option value="TRUE">true</option>
+							<option value="FALSE">false</option>
+							<option value="NULL">unknown</option>
+						</select>
 					</c:when>
 					<c:otherwise>
 						<input class="form-control" type="text" id="new_prop${widget}" name="new_prop${widget}" id="new_prop${widget}" value="${param[previousValue]}"/>
+						<select style="display: none;" class="form-control form-control-inline" id="booleanSelect${widget}" name="booleanSelect${widget}">
+							<option value="TRUE">true</option>
+							<option value="FALSE">false</option>
+							<option value="NULL">unknown</option>
+						</select>
 					</c:otherwise>
 				</c:choose>
-				
 			</td>
 			</tr>
 			</c:forEach>
 			</table>
 			<button type="submit" name="batch_edit" value="Apply" class="btn btn-primary">Apply</button>
+			<button type="submit" formmethod="post" formaction="BatchEditServlet" name="editSelected" value="${widgets + 1}" class="btn btn-default btn-sm"><i class="fa fa-plus"></i>Add criteria</button>
 			</form>
-			<button type="submit" name="editSelected" value="${widgets + 1}" class="btn btn-default btn-sm" formmethod="post" formaction="BatchEditServlet"><i class="fa fa-plus"></i>Add criteria</button>
 			</div>
 			</c:otherwise>
 	</c:choose>

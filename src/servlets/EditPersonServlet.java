@@ -48,7 +48,7 @@ public class EditPersonServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propStatement = connection.createStatement();
-			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name, property.property_id");
+			propertySet = propStatement.executeQuery(DBConnection.getPropertyQuery());
 			propSet = ResultSupport.toResult(propertySet);
 			personStatement = connection.createStatement();
 			
@@ -62,6 +62,7 @@ public class EditPersonServlet extends HttpServlet {
 			errors.append("Error during fetching properties from database: " + exc.getMessage());
 		}
 		finally {
+			request.setAttribute("current_query", request.getParameter("current_query"));
 			request.setAttribute("message", messages.toString());
 			request.setAttribute("error", errors.toString());
 			request.setAttribute("propertySet", propSet);
@@ -94,7 +95,7 @@ public class EditPersonServlet extends HttpServlet {
 		try {
 			connection = DBConnection.getConnection();
 			propStatement = connection.createStatement();
-			propertySet = propStatement.executeQuery("SELECT property.*, property_group.name AS group_name FROM property, property_group WHERE property_group = property_group_id ORDER BY (property_group.name != 'Basic Data'), property_group.name");
+			propertySet = propStatement.executeQuery(DBConnection.getPropertyQuery());
 			propSet = ResultSupport.toResult(propertySet);
 			personStatement = connection.createStatement();
 			
@@ -148,7 +149,12 @@ public class EditPersonServlet extends HttpServlet {
 							throw new SQLException();
 						}
 						
-						sql.append(parameterName).append("='").append(parameterValue).append("'");
+						if (parameterType.equals("boolean")) {
+							sql.append(parameterName).append("=").append(parameterValue);
+						}
+						else {
+							sql.append(parameterName).append("='").append(parameterValue).append("'");
+						}
 					}
 				}
 				// end of validation
@@ -176,12 +182,14 @@ public class EditPersonServlet extends HttpServlet {
 		}
 		finally {
 			request.setAttribute("message", messages.toString());
+			request.setAttribute("current_query", request.getParameter("current_query"));
 			request.setAttribute("error", errors.toString());
 			request.setAttribute("propertySet", propSet);
 			request.setAttribute("personData", pData);
 			request.setAttribute("person_id", personId + "");
 			
 			getServletContext().getRequestDispatcher("/editPerson.jsp").forward(request, response);
+//			response.sendRedirect("/people/QueryServlet");
 			
 			if (connection != null) try { connection.setAutoCommit(false); } catch (SQLException exc) {}
 	        if (propStatement != null) try { propStatement.close(); } catch (SQLException exc) {}

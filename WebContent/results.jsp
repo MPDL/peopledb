@@ -16,7 +16,7 @@
 	function assertNotAllBlank(name) {
 		var toChoose = document.getElementsByName(name);
 		var toChooseLength = toChoose.length;
-		for (i = 0; i < toChooseLength; i++) {
+		for (var i = 0; i < toChooseLength; i++) {
 			if (toChoose[i].checked == true) {
 				return true;
 			}
@@ -24,10 +24,18 @@
 		alert('No entries are selected.');
 		return false;	
 	}
+	function selectAllMembers(source) {
+		var toSelect = document.querySelectorAll('input[name="toChoose"]');
+		var toSelectLength = toSelect.length;
+		for (var i = 0; i < toSelectLength; i++) {
+			toSelect[i].checked = source.checked;
+		}
+		return;
+	}
 </script>
 </head>
 <body>
-	<div class="vertical-center" align="center">
+	<div align="center">
 		<%@ include file="../WEB-INF/include/header.jsp" %>
 		<div class="container">
 			<c:choose>
@@ -61,7 +69,8 @@
 								</c:forEach>
 							</select></td>
 							<td>
-							<input name="current_query" type="hidden" value="${current_query}"/>
+<%-- 							<input name="current_query" type="hidden" value="${current_query}"/> --%>
+<%-- 							<c:set var="current_query" value="${current_query}" scope="session" /> --%>
 							<select name="sort_by" class="dropdown form-control">
 								<c:choose>
 									<c:when test="${fn:contains(message, 'DESC')}">
@@ -78,27 +87,30 @@
 							<td><input class="form-control form-control-inline" type="text" name="query" placeholder="Search within results"/></td>
 							<td><button formmethod="get" formaction="QueryServlet" name="nested_search" value="nested" class="btn btn-default"><i class="fa fa-search"></i></button></td>
 						</tr>
-							</table>
-							</span>
+						</table>
+						</span>
 						</div>
 						</form>
+						</div>
+						<div class="smallContainer">
 						<form method="get" action="EmailListServlet">
 					 	<table class="table-striped table-hover table-responsive" style="white-space: nowrap;"> 
 					 	<thead> 
-					 		<th class="col-md-2"></th>
+					 		<th class="text-center" scope="row">All<input type="checkbox" name="selectAll" onclick="selectAllMembers(this);" class="headerCheckbox"/></th>
 					 		<c:forEach items="${nameList}" var="colHead" varStatus="status">
-					 			<th class="text-center">${colHead}<input type="checkbox" name="toExport" value="${dbNameList[status.index]}" class="headerCheckbox" checked/></th>
+					 			<th class="text-center" scope="row">${colHead}<input type="checkbox" name="toExport" value="${dbNameList[status.index]}" class="headerCheckbox" checked/></th>
 					 		</c:forEach>
 					 	</thead> 
 					 	<c:forEach items="${resultData.rows}" var="currentRow">
 					 		<tr>
-						 		<td class="check">
+						 		<td class="check text-center">
 						 			<input type="checkbox" name="toChoose" value="person${currentRow.person_id}"></input>
 						 		</td>
 					 			<c:forEach items="${dbNameList}" var="colName">
-					 				<td class="col-md-2">${currentRow[colName]}</td>
+					 				<td>${currentRow[colName]}</td>
 					 			</c:forEach>
-					 			<td class="col-md-2">
+					 			<td>
+					 				<input name="current_query" type="hidden" value="${current_query}"/>
 					 				<button class="btn btn-default btn-sm" type="submit" formmethod="get" formaction="EditPersonServlet" name="person_id" value="${currentRow.person_id}" class="btn btn-outline">Edit</button>
 					 			</td>
 					 		</tr>
@@ -112,7 +124,13 @@
 						</form>
 					</c:when>
 					<c:otherwise>
-						<p class="alert alert-info"><strong>The search did not return any matches. Try refining your search criteria.</strong></p>
+						<p><strong>The search did not return any matches. Try refining your search criteria.</strong></p>
+						<form method="get" action="/people/index.jsp">
+							<button type=submit class="btn btn-primary">Simple search</button>
+						</form>
+						<form method="get" action="/people/advancedSearch.jsp">
+							<button type=submit class="btn btn-primary">Advanced search</button>
+						</form>
 					</c:otherwise>
 					</c:choose>
 			</c:otherwise>

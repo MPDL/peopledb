@@ -8,6 +8,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 public class InputValidator {
 
@@ -58,7 +59,7 @@ public class InputValidator {
 		String[] validTrue = {"TRUE", "'t'", "'true'", "'y'", "'yes'", "'on'", "'1'"};
 		String[] validFalse = {"FALSE", "'f'", "'false'", "'n'", "'no'", "'off'", "'0'"};
 		
-		return ArrayUtils.contains(validTrue, bool) || ArrayUtils.contains(validFalse, bool);
+		return ArrayUtils.contains(validTrue, bool) || ArrayUtils.contains(validFalse, bool) || StringUtils.equalsIgnoreCase("null", bool);
 	}
 	
 	private boolean decimalValid(String decimal) {

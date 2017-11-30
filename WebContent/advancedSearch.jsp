@@ -46,12 +46,25 @@
 <script>
 function changeInputType(sel, id) {
 	var inputBox = document.getElementById('value' + id);
-	if (sel.value.split('$')[1] == 'decimal') {
-		inputBox.type = 'number';
-		inputBox.step='0.0001';
+	var valueSelect = document.getElementById('booleanSelect' + id);
+	if (sel.value.split('$')[1] == 'boolean') {
+		inputBox.required = false;
+		inputBox.style.display = 'none';
+		valueSelect.style.display = 'inline';
 	}
 	else {
-		inputBox.type = sel.value.split('$')[1]
+		if (id == 1) {
+			inputBox.required = true;
+		}
+		valueSelect.style.display = 'none';
+		inputBox.style.display = 'inline';
+		if (sel.value.split('$')[1] == 'decimal') {
+			inputBox.type = 'number';
+			inputBox.step='0.0001';
+		}
+		else {
+			inputBox.type = sel.value.split('$')[1]
+		}
 	}
 }
 function disableIllegalInputs(compareSel, matchSelID) {
@@ -61,6 +74,18 @@ function disableIllegalInputs(compareSel, matchSelID) {
 	}
 	else {
 		matchSel.disabled = false;
+	}
+}
+function disablePartialMatch(typeSel, matchSelID) {
+	var matchSel = document.getElementById('queryMatch' + matchSelID);
+	if (typeSel.value.split('$')[1] == 'character_varying') {
+		matchSel[1].disabled = false;
+		matchSel[1].style.background = "rgba(255, 255, 255, 0.3)";
+	}
+	else {
+		matchSel.selectedIndex = 0; 
+		matchSel[1].disabled = true;
+		matchSel[1].style.background = "rgba(100, 100, 100, 0.3)";
 	}
 }
 </script>
@@ -87,7 +112,7 @@ function disableIllegalInputs(compareSel, matchSelID) {
 		<% for (int widget = 1; widget <= widgets; widget++) { %>
 			<tr name="widget">
 			<td>
-				<select class="form-control form-control-inline" name="property<%= + widget %>" onchange="changeInputType(this,<%= widget %>)">
+				<select class="form-control form-control-inline" name="property<%= + widget %>" onchange="changeInputType(this,<%= widget %>); disablePartialMatch(this,<%= widget %>)">
 				<% 
 				for (Map.Entry<String, List<Triple<String, String, String>>> entry : propertyMap.entrySet()) { %>
 						<optgroup label="<%= entry.getKey() %>">
@@ -139,11 +164,22 @@ function disableIllegalInputs(compareSel, matchSelID) {
 				</select>
 			</td>
 			<td>
+			<%-- Dynamic input element for the search value --%>
 			<% if (widgets == 1) { %>
 				<input required class="form-control form-control-inline" type="text" id="value<%=+widget %>" name="value<%=+widget %>" value="<%= request.getParameter("value" + widget) != null ? request.getParameter("value" + widget) : "" %>"/>
+				<select required style="display: none;" class="form-control form-control-inline" id="booleanSelect<%= +widget %>" name="booleanSelect<%= +widget %>">
+					<option value="TRUE">true</option>
+					<option value="FALSE">false</option>
+					<option value="NULL">unknown</option>
+				</select>
 			<% } 
 				else {%>
 			<input class="form-control form-control-inline" type="text" id="value<%=+widget %>" name="value<%=+widget %>" value="<%= request.getParameter("value" + widget) != null ? request.getParameter("value" + widget) : "" %>"/>
+			<select style="display: none;" class="form-control form-control-inline" id="booleanSelect<%= +widget %>" name="booleanSelect<%= +widget %>">
+				<option value="TRUE">true</option>
+				<option value="FALSE">false</option>
+				<option value="NULL">unknown</option>
+			</select>
 			<% } %>
 			</td>
 			</tr>
