@@ -69,8 +69,7 @@
 								</c:forEach>
 							</select></td>
 							<td>
-<%-- 							<input name="current_query" type="hidden" value="${current_query}"/> --%>
-<%-- 							<c:set var="current_query" value="${current_query}" scope="session" /> --%>
+							<input name="current_query" type="hidden" value="${current_query}"/>
 							<select name="sort_by" class="dropdown form-control">
 								<c:choose>
 									<c:when test="${fn:contains(message, 'DESC')}">
