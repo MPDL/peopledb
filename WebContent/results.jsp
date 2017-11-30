@@ -82,7 +82,7 @@
 									</c:otherwise>
 								</c:choose>
 							</select></td>
-							<td><button name="sort_by" class="btn btn-default">Go</button></td>
+							<td><button name="go_sort" class="btn btn-default" value="to_sort">Go</button></td>
 							<td><input class="form-control form-control-inline" type="text" name="query" placeholder="Search within results"/></td>
 							<td><button formmethod="get" formaction="QueryServlet" name="nested_search" value="nested" class="btn btn-default"><i class="fa fa-search"></i></button></td>
 						</tr>

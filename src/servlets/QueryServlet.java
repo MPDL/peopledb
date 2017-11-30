@@ -61,7 +61,7 @@ public class QueryServlet extends HttpServlet {
 			StringBuilder sql = new StringBuilder();
 			
 			// process old query
-			if (request.getParameter("current_query") != null) {
+			if (request.getParameter("current_query") != null && !"to_sort".equals(request.getParameter("go_sort")) && !"nested".equals(request.getParameter("nested_search"))) {
 				sql.append(request.getParameter("current_query"));
 			}
 			// search within results
@@ -77,7 +77,7 @@ public class QueryServlet extends HttpServlet {
 				appendCriteria(request, sql, dbNameList, typeList);
 			}
 			// sort results
-			else if (request.getParameter("current_query") != null && "".equals(request.getParameter("query"))) {
+			else if (request.getParameter("current_query") != null && "to_sort".equals(request.getParameter("go_sort"))) {
 				sql = sortResults(request, sql);
 			}
 			// quick search
