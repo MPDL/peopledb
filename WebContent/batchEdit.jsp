@@ -34,9 +34,16 @@ function changeInputType(sel, id) {
 		}
 	}
 }
+// prevents input type from switching to text after adding criteria
+function loadTypeInputs(widgets) {
+	for (var i = 1; i <= widgets; i++) {
+		changeInputType(document.getElementsByName('property' + i)[0], i);
+	}
+	return;
+}
 </script>
 </head>
-<body>
+<body onload="return loadTypeInputs(${widgets});">
 <div class="vertical-center" align="center">
 	<%@ include file="../WEB-INF/include/header.jsp" %>
 	<div class="container">
@@ -91,6 +98,7 @@ function changeInputType(sel, id) {
 				
 				<%-- After adding edit criteria each text box remembers its specified value --%>
 				<c:set var = "previousValue" scope = "session" value = "new_prop${widget}"/>
+				<c:set var = "previousBooleanValue" scope = "session" value = "booleanSelect${widget}"/>
 				<c:choose>
 					<c:when test="${widgets eq 1}">
 						<input required class="form-control" type="text" id="new_prop${widget}" name="new_prop${widget}" id="new_prop${widget}" value="${param[previousValue]}" required/>
@@ -103,9 +111,23 @@ function changeInputType(sel, id) {
 					<c:otherwise>
 						<input class="form-control" type="text" id="new_prop${widget}" name="new_prop${widget}" id="new_prop${widget}" value="${param[previousValue]}"/>
 						<select style="display: none;" class="form-control form-control-inline" id="booleanSelect${widget}" name="booleanSelect${widget}">
-							<option value="TRUE">true</option>
-							<option value="FALSE">false</option>
-							<option value="NULL">unknown</option>
+							<c:choose>
+								<c:when test="${param[previousBooleanValue] eq 'TRUE'}">
+									<option value="TRUE" selected>true</option>
+									<option value="FALSE">false</option>
+									<option value="NULL">unknown</option>
+								</c:when>
+								<c:when test="${param[previousBooleanValue] eq 'FALSE'}">
+									<option value="TRUE">true</option>
+									<option value="FALSE" selected>false</option>
+									<option value="NULL">unknown</option>
+								</c:when>
+								<c:otherwise>
+									<option value="TRUE">true</option>
+									<option value="FALSE">false</option>
+									<option value="NULL" selected>unknown</option>
+								</c:otherwise>
+							</c:choose>
 						</select>
 					</c:otherwise>
 				</c:choose>

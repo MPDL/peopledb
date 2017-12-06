@@ -7,6 +7,7 @@
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <%@ include file="../WEB-INF/include/db.jsp" %>
 <%
 	// TODO: convert to JSTL, model is in batch edit page
@@ -88,9 +89,16 @@ function disablePartialMatch(typeSel, matchSelID) {
 		matchSel[1].style.background = "rgba(100, 100, 100, 0.3)";
 	}
 }
+// prevents input type from switching to text after adding criteria
+function loadTypeInputs(widgets) {
+	for (var i = 1; i <= widgets; i++) {
+		changeInputType(document.getElementsByName('property' + i)[0], i);
+	}
+	return;
+}
 </script>
 </head>
-<body>
+<body onload="return loadTypeInputs(<%= widgets %>);">
 	<div class="vertical-center" align="center">
 		<%@ include file="../WEB-INF/include/header.jsp" %>
 		<div class="container">
@@ -165,6 +173,7 @@ function disablePartialMatch(typeSel, matchSelID) {
 			</td>
 			<td>
 			<%-- Dynamic input element for the search value --%>
+			<c:set var = "previousBooleanValue" scope = "session" value = "<%= request.getParameter(\"booleanSelect\" + widget)%>"/>
 			<% if (widgets == 1) { %>
 				<input required class="form-control form-control-inline" type="text" id="value<%=+widget %>" name="value<%=+widget %>" value="<%= request.getParameter("value" + widget) != null ? request.getParameter("value" + widget) : "" %>"/>
 				<select required style="display: none;" class="form-control form-control-inline" id="booleanSelect<%= +widget %>" name="booleanSelect<%= +widget %>">
@@ -176,9 +185,23 @@ function disablePartialMatch(typeSel, matchSelID) {
 				else {%>
 			<input class="form-control form-control-inline" type="text" id="value<%=+widget %>" name="value<%=+widget %>" value="<%= request.getParameter("value" + widget) != null ? request.getParameter("value" + widget) : "" %>"/>
 			<select style="display: none;" class="form-control form-control-inline" id="booleanSelect<%= +widget %>" name="booleanSelect<%= +widget %>">
-				<option value="TRUE">true</option>
-				<option value="FALSE">false</option>
-				<option value="NULL">unknown</option>
+				<c:choose>
+					<c:when test="${previousBooleanValue eq 'TRUE'}">
+						<option value="TRUE" selected>true</option>
+						<option value="FALSE">false</option>
+						<option value="NULL">unknown</option>
+					</c:when>
+					<c:when test="${previousBooleanValue eq 'FALSE'}">
+						<option value="TRUE">true</option>
+						<option value="FALSE" selected>false</option>
+						<option value="NULL">unknown</option>
+					</c:when>
+					<c:otherwise>
+						<option value="TRUE">true</option>
+						<option value="FALSE">false</option>
+						<option value="NULL" selected>unknown</option>
+					</c:otherwise>
+				</c:choose>
 			</select>
 			<% } %>
 			</td>
