@@ -55,8 +55,9 @@
 						<div class="input-group result-options">
 						<span class="input-group-btn">
 						<table>
-							<tr><td><label>Sort by: </label></td>
-							<td><select name="sort_criteria" class="dropdown form-control">
+							<tr>
+							<td class="col-lg-1"><label for="sort_criteria">Sort by: </label></td>
+							<td class="col-lg-3"><select name="sort_criteria" class="dropdown form-control">
 								<c:forEach items="${nameList}" var="colName" varStatus="status">
 									<c:choose>
 										<c:when test="${fn:contains(fn:substringAfter(message, 'ORDER BY'), dbNameList[status.index])}">
@@ -68,7 +69,7 @@
 									</c:choose>
 								</c:forEach>
 							</select></td>
-							<td>
+							<td class="col-lg-2">
 							<input name="current_query" type="hidden" value="${current_query}"/>
 							<select name="sort_by" class="dropdown form-control">
 								<c:choose>
@@ -82,9 +83,9 @@
 									</c:otherwise>
 								</c:choose>
 							</select></td>
-							<td><button name="go_sort" class="btn btn-default" value="to_sort">Go</button></td>
-							<td><input class="form-control form-control-inline" type="text" name="query" placeholder="Search within results"/></td>
-							<td><button formmethod="get" formaction="QueryServlet" name="nested_search" value="nested" class="btn btn-default"><i class="fa fa-search"></i></button></td>
+							<td class="col-lg-1"><button name="go_sort" class="btn btn-default" value="to_sort">Go</button></td>
+							<td class="col-lg-3"><input class="form-control form-control-inline" type="text" name="query" placeholder="Search within results"/></td>
+							<td class="col-lg-2"><button formmethod="get" formaction="QueryServlet" name="nested_search" value="nested" class="btn btn-default"><i class="fa fa-search"></i></button></td>
 						</tr>
 						</table>
 						</span>
