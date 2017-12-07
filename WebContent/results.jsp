@@ -124,10 +124,10 @@
 					</c:when>
 					<c:otherwise>
 						<p><strong>The search did not return any matches. Try refining your search criteria.</strong></p>
-						<form method="get" action="/people/index.jsp">
+						<form method="get" action="/people/index.jsp" style="display: inline-block;">
 							<button type=submit class="btn btn-primary">Simple search</button>
 						</form>
-						<form method="get" action="/people/advancedSearch.jsp">
+						<form method="get" action="/people/advancedSearch.jsp" style="display: inline-block;">
 							<button type=submit class="btn btn-primary">Advanced search</button>
 						</form>
 					</c:otherwise>
