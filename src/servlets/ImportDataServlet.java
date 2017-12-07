@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.tomcat.util.buf.StringUtils;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
 
