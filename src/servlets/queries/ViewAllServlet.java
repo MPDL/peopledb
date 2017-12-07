@@ -1,4 +1,4 @@
-package servlets;
+package servlets.queries;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -29,12 +29,12 @@ public class ViewAllServlet extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		StringBuilder messages = new StringBuilder();
 		String messages = request.getParameter("message");
 		StringBuilder errors = new StringBuilder();
 		
 		LinkedList<String> nameList = new LinkedList<String>();
 		LinkedList<String> dbNameList = new LinkedList<String>();
+		LinkedList<String> groupNameList = new LinkedList<String>();
 		ResultSet propertySet = null;
 		ResultSet resultData = null;
 		Result result = null;
@@ -42,10 +42,9 @@ public class ViewAllServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propertySet = getPropertySet(connection);
-			getPropertyNames(propertySet, nameList, dbNameList);
+			getPropertyNames(propertySet, nameList, dbNameList, groupNameList);
 			
 			searchStatement = connection.createStatement();
-//			String sql = "SELECT person.* FROM person, person_intern WHERE (person.person_id=person_intern.person_id AND person_intern.deleted = FALSE) ORDER BY " + dbNameList.getFirst();
 			String sql = "SELECT * FROM person WHERE (deleted = FALSE) ORDER BY " + dbNameList.getFirst();
 			
 			resultData = dispatchRequest(searchStatement, sql, null, errors);
@@ -62,6 +61,7 @@ public class ViewAllServlet extends HttpServlet {
 			request.setAttribute("error", errors.toString());
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);
+			request.setAttribute("groupList", groupNameList);
 			request.setAttribute("resultData", result);
 			
 			getServletContext().getRequestDispatcher("/results.jsp").forward(request, response);
@@ -81,12 +81,14 @@ public class ViewAllServlet extends HttpServlet {
 	 * Mutates @param nameList and @param dbNameList
 	 * @throws SQLException 
 	 */
-	private void getPropertyNames(ResultSet propertySet, List<String> names, List<String> dbNames) throws SQLException {
+	private void getPropertyNames(ResultSet propertySet, List<String> names, List<String> dbNames, List<String> types) throws SQLException {
 		while (propertySet.next()) {
 			String propertyName = propertySet.getString("name");
 			String propertyDbName = propertySet.getString("db_name");
+			String propertyGroupName = propertySet.getString("group_name");
 			names.add(propertyName);
 			dbNames.add(propertyDbName);
+			types.add(propertyGroupName);
 		}
 	}
 	

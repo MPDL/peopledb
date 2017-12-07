@@ -83,22 +83,34 @@
 									</c:otherwise>
 								</c:choose>
 							</select></td>
-							<td class="col-lg-1"><button name="go_sort" class="btn btn-default" value="to_sort">Go</button></td>
+							<td class="col-lg-1"><button formmethod="get" formaction="SortQueryServlet" name="go_sort" class="btn btn-default" value="to_sort">Go</button></td>
 							<td class="col-lg-3"><input class="form-control form-control-inline" type="text" name="query" placeholder="Search within results"/></td>
-							<td class="col-lg-2"><button formmethod="get" formaction="QueryServlet" name="nested_search" value="nested" class="btn btn-default"><i class="fa fa-search"></i></button></td>
+							<td class="col-lg-2"><button formmethod="get" formaction="NestedQueryServlet" name="nested_search" value="nested" class="btn btn-default"><i class="fa fa-search"></i></button></td>
 						</tr>
 						</table>
 						</span>
 						</div>
 						</form>
 						</div>
+						<c:choose>
+							<c:when test="${fn:length(resultData.rows) eq 1}">
+								<label>${fn:length(resultData.rows)} member</label>
+							</c:when>
+							<c:otherwise>
+								<label style="float: left;">${fn:length(resultData.rows)} members</label>
+							</c:otherwise>
+						</c:choose>
 						<div class="smallContainer">
 						<form method="get" action="EmailListServlet">
+						
 					 	<table class="table-striped table-hover table-responsive" style="white-space: nowrap;"> 
 					 	<thead> 
-					 		<th class="text-center" scope="row">All<input type="checkbox" name="selectAll" onclick="selectAllMembers(this);" class="headerCheckbox"/></th>
+					 		<th class="text-center" scope="row"><label for="selectAll">All<input type="checkbox" id="selectAll" name="selectAll" onclick="selectAllMembers(this);" class="headerCheckbox"/></label></th>
 					 		<c:forEach items="${nameList}" var="colHead" varStatus="status">
-					 			<th class="text-center" scope="row">${colHead}<input type="checkbox" name="toExport" value="${dbNameList[status.index]}" class="headerCheckbox" checked/></th>
+					 			<th class="text-center" scope="row">
+					 				<div><label for="toExport${status.index}">${colHead}<input type="checkbox" name="toExport" value="${dbNameList[status.index]}" id="toExport${status.index}" class="headerCheckbox" checked/></label></div>
+					 				<div style="font-weight: normal;">${groupList[status.index]}</div>
+					 			</th>
 					 		</c:forEach>
 					 	</thead> 
 					 	<c:forEach items="${resultData.rows}" var="currentRow">

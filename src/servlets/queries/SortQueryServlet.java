@@ -17,12 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.jstl.sql.Result;
 import javax.servlet.jsp.jstl.sql.ResultSupport;
 
+import org.apache.commons.lang3.StringUtils;
+
 import helpers.DBConnection;
 
-@WebServlet("/RefreshedQueryServlet")
-public class RefreshedQueryServlet extends HttpServlet {
+@WebServlet("/SortQueryServlet")
+public class SortQueryServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 3677109899403365393L;
+	private static final long serialVersionUID = -5782985935539557920L;
 
 	public void init() {
 		ServletContext context = getServletContext();
@@ -42,8 +44,8 @@ public class RefreshedQueryServlet extends HttpServlet {
 		
 		LinkedList<String> nameList = new LinkedList<String>();
 		LinkedList<String> dbNameList = new LinkedList<String>();
-		LinkedList<String> groupNameList = new LinkedList<String>();
 		LinkedList<String> typeList = new LinkedList<String>();
+		LinkedList<String> groupNameList = new LinkedList<String>();
 		ResultSet propertySet = null;
 		ResultSet resultData = null;
 		Result result = null;
@@ -56,9 +58,9 @@ public class RefreshedQueryServlet extends HttpServlet {
 			searchStatement = connection.createStatement();
 			StringBuilder sql = new StringBuilder();
 			
-			// process old query
-			if (request.getParameter("current_query") != null && !"to_sort".equals(request.getParameter("go_sort")) && !"nested".equals(request.getParameter("nested_search"))) {
-				sql.append(request.getParameter("current_query"));
+			// sort results
+			if (request.getParameter("current_query") != null && "to_sort".equals(request.getParameter("go_sort"))) {
+				sql = sortResults(request, sql);
 			}
 			// empty input: server-side validation
 			else {
@@ -81,7 +83,7 @@ public class RefreshedQueryServlet extends HttpServlet {
 			request.setAttribute("current_query", messages.toString());
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);
-			request.setAttribute("groupList", groupNameList);
+			request.setAttribute("groupNameList", groupNameList);
 			request.setAttribute("resultData", result);
 			
 			getServletContext().getRequestDispatcher("/results.jsp").forward(request, response);
@@ -112,6 +114,25 @@ public class RefreshedQueryServlet extends HttpServlet {
 			groups.add(groupName);
 			types.add(type);
 		}
+	}
+	
+	/**
+	 * Mutates @param sql
+	 */
+	private StringBuilder sortResults(final HttpServletRequest request, StringBuilder sql) {
+		String toSort = request.getParameter("current_query");
+		String criteria = request.getParameter("sort_criteria");
+		sql.append(StringUtils.substringBefore(toSort, "ORDER BY"));
+		sql.append(" ORDER BY ");
+		sql.append(criteria);
+		if (request.getParameter("sort_by") == null || "ASC".equals(request.getParameter("sort_by"))) {
+			sql.append(" ASC");
+		}
+		else {
+			sql.append(" DESC");
+		}
+		
+		return sql;
 	}
 	
 	private ResultSet dispatchRequest(Statement searchStatement, StringBuilder sql, StringBuilder messages, StringBuilder errors) throws SQLException {

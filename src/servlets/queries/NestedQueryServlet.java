@@ -17,12 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.jstl.sql.Result;
 import javax.servlet.jsp.jstl.sql.ResultSupport;
 
+import org.apache.commons.lang3.StringUtils;
+
 import helpers.DBConnection;
 
-@WebServlet("/RefreshedQueryServlet")
-public class RefreshedQueryServlet extends HttpServlet {
+@WebServlet("/NestedQueryServlet")
+public class NestedQueryServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 3677109899403365393L;
+	private static final long serialVersionUID = 6599243189979185235L;
 
 	public void init() {
 		ServletContext context = getServletContext();
@@ -42,8 +44,8 @@ public class RefreshedQueryServlet extends HttpServlet {
 		
 		LinkedList<String> nameList = new LinkedList<String>();
 		LinkedList<String> dbNameList = new LinkedList<String>();
-		LinkedList<String> groupNameList = new LinkedList<String>();
 		LinkedList<String> typeList = new LinkedList<String>();
+		LinkedList<String> groupNameList = new LinkedList<String>();
 		ResultSet propertySet = null;
 		ResultSet resultData = null;
 		Result result = null;
@@ -56,9 +58,17 @@ public class RefreshedQueryServlet extends HttpServlet {
 			searchStatement = connection.createStatement();
 			StringBuilder sql = new StringBuilder();
 			
-			// process old query
-			if (request.getParameter("current_query") != null && !"to_sort".equals(request.getParameter("go_sort")) && !"nested".equals(request.getParameter("nested_search"))) {
-				sql.append(request.getParameter("current_query"));
+			// search within results
+			if (request.getParameter("current_query") != null && "nested".equals(request.getParameter("nested_search")) && !"".equals(request.getParameter("query"))) {
+				String currentQuery = request.getParameter("current_query");
+				sql.append(StringUtils.substringBeforeLast(currentQuery, "ORDER BY"));
+				if (StringUtils.containsIgnoreCase(currentQuery, "WHERE")) {
+					sql.append(" AND (");
+				}
+				else {
+					sql.append(" WHERE (");
+				}
+				appendCriteria(request, sql, dbNameList, typeList);
 			}
 			// empty input: server-side validation
 			else {
@@ -81,7 +91,7 @@ public class RefreshedQueryServlet extends HttpServlet {
 			request.setAttribute("current_query", messages.toString());
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);
-			request.setAttribute("groupList", groupNameList);
+			request.setAttribute("groupNameList", groupNameList);
 			request.setAttribute("resultData", result);
 			
 			getServletContext().getRequestDispatcher("/results.jsp").forward(request, response);
@@ -120,5 +130,34 @@ public class RefreshedQueryServlet extends HttpServlet {
 		messages.append(sql.toString());
 		
 		return resultData;
+	}
+	
+	/**
+	 * Mutates @param sql
+	 */
+	private StringBuilder appendCriteria(final HttpServletRequest request, StringBuilder sql, LinkedList<String> dbNameList, LinkedList<String> typeList) {
+		String query = request.getParameter("query");
+		query = DBConnection.toPostgreSQLWildcards(query);
+		query = DBConnection.dbQueryEscape(query);
+		
+		int listCount = dbNameList.size();
+		boolean first = true;
+		for (int i = 0; i < listCount; i++)
+		{
+			if (typeList.get(i).matches("character_varying|text|email")) {
+				String dbName = dbNameList.get(i);
+				if (!first) {
+					sql.append(" OR ");
+				}
+				else {
+					first = false;
+				}
+				sql.append(dbName);
+				sql.append(" ILIKE '%").append(query).append("%'");
+			}
+		}
+		sql.append(") ORDER BY " + dbNameList.getFirst());
+		
+		return sql;
 	}
 }

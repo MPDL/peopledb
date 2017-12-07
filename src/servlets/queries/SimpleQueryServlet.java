@@ -42,6 +42,7 @@ public class SimpleQueryServlet extends HttpServlet {
 		
 		LinkedList<String> nameList = new LinkedList<String>();
 		LinkedList<String> dbNameList = new LinkedList<String>();
+		LinkedList<String> groupNameList = new LinkedList<String>();
 		LinkedList<String> typeList = new LinkedList<String>();
 		ResultSet propertySet = null;
 		ResultSet resultData = null;
@@ -50,7 +51,7 @@ public class SimpleQueryServlet extends HttpServlet {
 		
 		try (Connection connection = DBConnection.getConnection()) {
 			propertySet = getPropertySet(connection);
-			getPropertyNames(propertySet, nameList, dbNameList, typeList);
+			getPropertyNames(propertySet, nameList, dbNameList, groupNameList, typeList);
 			
 			searchStatement = connection.createStatement();
 			StringBuilder sql = new StringBuilder();
@@ -80,6 +81,7 @@ public class SimpleQueryServlet extends HttpServlet {
 			request.setAttribute("current_query", messages.toString());
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);
+			request.setAttribute("groupList", groupNameList);
 			request.setAttribute("resultData", result);
 			
 			getServletContext().getRequestDispatcher("/results.jsp").forward(request, response);
@@ -99,13 +101,15 @@ public class SimpleQueryServlet extends HttpServlet {
 	 * Mutates @param nameList and @param dbNameList
 	 * @throws SQLException 
 	 */
-	private void getPropertyNames(ResultSet propertySet, List<String> names, List<String> dbNames, List<String> types) throws SQLException {
+	private void getPropertyNames(ResultSet propertySet, List<String> names, List<String> dbNames, List<String> groups, List<String> types) throws SQLException {
 		while (propertySet.next()) {
 			String propertyName = propertySet.getString("name");
 			String propertyDbName = propertySet.getString("db_name");
+			String groupName = propertySet.getString("group_name");
 			String type = propertySet.getString("type");
 			names.add(propertyName);
 			dbNames.add(propertyDbName);
+			groups.add(groupName);
 			types.add(type);
 		}
 	}

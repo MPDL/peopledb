@@ -1,4 +1,4 @@
-package servlets;
+package servlets.queries;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -66,7 +66,6 @@ public class CustomQueryServlet extends HttpServlet {
 				throw new SQLException("No input was provided.");
 			}
 			
-			System.out.println(errors.toString());
 			if (errors.length() == 0) {
 				String query = sql.toString();
 				if (StringUtils.containsIgnoreCase(query, "SELECT") && StringUtils.containsIgnoreCase(query, "FROM")) {
