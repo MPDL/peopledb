@@ -45,7 +45,7 @@
 	 		</tr>
 	 	</c:forEach>
 	</table>
-	<form method="get" action="QueryServlet"></form>
+	<form method="get" action="RefreshedQueryServlet">
 	 		<input type="hidden" name="current_query" value="${current_query}">
 	 		<button type="submit" class="btn btn-default btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i>Back to search results</button>
 	</form>
