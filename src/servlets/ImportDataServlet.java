@@ -1,7 +1,9 @@
 package servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.tomcat.util.buf.StringUtils;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
 
@@ -58,10 +61,11 @@ public class ImportDataServlet extends HttpServlet {
 				long newRows = 0;
 				for (Part part : parts) {
 					InputStream partInputStream = part.getInputStream();
-					newRows += importFileIntoDB(partInputStream, errors);
+					String header = new BufferedReader(new InputStreamReader(partInputStream, "UTF-8")).readLine();
+					newRows += importFileIntoDB(partInputStream, header, errors);
 				}
 				
-				messages.append(newRows + " new rows successfully imported.");
+				messages.append(newRows + " new " + (newRows == 1 ? "row was" : "rows were") + " imported.");
 			}
 			catch (Exception exc) {
 				errors.append("An error occured during file upload: " + exc.getMessage());
@@ -72,14 +76,14 @@ public class ImportDataServlet extends HttpServlet {
 		}
 	}
 	
-	private long importFileIntoDB(InputStream inputStream, StringBuilder errors) {
+	private long importFileIntoDB(InputStream inputStream, String header, StringBuilder errors) {
 		Connection connection = null;
 		
 		try {
 			connection = DBConnection.getConnection();
 			connection.setAutoCommit(false);
 			CopyManager copyManager = new CopyManager((BaseConnection) connection);
-			long newRows = copyManager.copyIn("COPY person FROM STDIN DELIMITER ',' CSV;", inputStream);
+			long newRows = copyManager.copyIn("COPY person (" + header + ") FROM STDIN WITH (DELIMITER ',', FORMAT CSV, HEADER TRUE);", inputStream);
 			connection.commit();
 			return newRows;
 		}

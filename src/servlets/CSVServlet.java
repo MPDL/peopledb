@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import helpers.DBConnection;
 
 @WebServlet("/CSVServlet")
@@ -34,7 +36,8 @@ public class CSVServlet extends HttpServlet {
 		
 		if (sql != null) {
 			String[] toExport = request.getParameterValues("toExport");
-			sql = buildExportQuery(sql, toExport);
+			String[] toChoose = request.getParameterValues("toChoose");
+			sql = buildExportQuery(sql, toExport, toChoose);
 			exportResults(sql, response);
 		}
 	}
@@ -116,9 +119,10 @@ public class CSVServlet extends HttpServlet {
 	/**
 	 *  Export only selected columns
 	 */
-	private String buildExportQuery(String nested, String[] columns) {
+	private String buildExportQuery(String nested, String[] columns, String[] rows) {
 		StringBuilder sql = new StringBuilder();
 		String tableAlias = "nestedQuery";
+		String selectedIDs = processIDs(rows);
 		
 		sql.append("SELECT ");
 		for (String colName : columns) {
@@ -127,8 +131,18 @@ public class CSVServlet extends HttpServlet {
 		}
 		sql.delete(sql.length() - 1, sql.length());
 		sql.append(" FROM ");
-		sql.append("(").append(nested).append(")").append(" AS ").append(tableAlias);
-		
+		sql.append("(").append(nested).append(")");
+		sql.append(" AS ").append(tableAlias);
+		sql.append(" WHERE ").append(tableAlias).append(".person_id IN ").append(selectedIDs);
 		return sql.toString();
+	}
+	
+	private String processIDs(String[] rows) {
+		StringBuilder result = new StringBuilder();
+		result.append("(");
+		for (String id : rows) {
+			result.append(id.replace("person", "")).append(",");
+		}
+		return StringUtils.substringBeforeLast(result.toString(), ",") + ")";
 	}
 }
