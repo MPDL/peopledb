@@ -11,6 +11,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.codehaus.plexus.util.StringUtils;
 
 public class InputValidator {
+	
+	private static String[] trueArray = {"'TRUE'", "'t'", "'true'", "'y'", "'yes'", "'on'", "'1'", "TRUE", "t", "true", "y", "yes", "on", "1"};
+	private static String[] falseArray = {"'FALSE'", "'f'", "'false'", "'n'", "'no'", "'off'", "'0'", "FALSE", "f", "false", "n", "no", "off", "0"};
 
 	public boolean validateInput(String input, String type) {
 		switch (type) {
@@ -56,10 +59,15 @@ public class InputValidator {
 	}
 	
 	private boolean booleanValid(String bool) {
-		String[] validTrue = {"TRUE", "'t'", "'true'", "'y'", "'yes'", "'on'", "'1'"};
-		String[] validFalse = {"FALSE", "'f'", "'false'", "'n'", "'no'", "'off'", "'0'"};
-		
-		return ArrayUtils.contains(validTrue, bool) || ArrayUtils.contains(validFalse, bool) || StringUtils.equalsIgnoreCase("null", bool);
+		return ArrayUtils.contains(trueArray, bool) || ArrayUtils.contains(falseArray, bool) || StringUtils.equalsIgnoreCase("null", bool);
+	}
+	
+	public static boolean isTrue(String bool) {
+		return ArrayUtils.contains(trueArray, bool);
+	}
+	
+	public static boolean isFalse(String bool) {
+		return ArrayUtils.contains(falseArray, bool);
 	}
 	
 	private boolean decimalValid(String decimal) {

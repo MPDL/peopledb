@@ -1,8 +1,7 @@
-package servlets;
+package servlets.queries;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,15 +18,14 @@ import javax.servlet.jsp.jstl.sql.Result;
 import javax.servlet.jsp.jstl.sql.ResultSupport;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpRequest;
 
 import helpers.DBConnection;
 import helpers.InputValidator;
 
-@WebServlet("/QueryServlet")
-public class QueryServlet extends HttpServlet {
+@WebServlet("/AdvancedQueryServlet")
+public class AdvancedQueryServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -702218860600042606L;
+	private static final long serialVersionUID = -4925455607191756110L;
 
 	public void init() {
 		ServletContext context = getServletContext();
@@ -60,46 +58,12 @@ public class QueryServlet extends HttpServlet {
 			searchStatement = connection.createStatement();
 			StringBuilder sql = new StringBuilder();
 			
-			// process old query
-			if (request.getParameter("current_query") != null && !"to_sort".equals(request.getParameter("go_sort")) && !"nested".equals(request.getParameter("nested_search"))) {
-				sql.append(request.getParameter("current_query"));
-			}
-			// search within results
-			else if (request.getParameter("current_query") != null && "nested".equals(request.getParameter("nested_search")) && !"".equals(request.getParameter("query"))) {
-				String currentQuery = request.getParameter("current_query");
-				sql.append(StringUtils.substringBeforeLast(currentQuery, "ORDER BY"));
-				if (StringUtils.containsIgnoreCase(currentQuery, "WHERE")) {
-					sql.append(" AND (");
-				}
-				else {
-					sql.append(" WHERE (");
-				}
-				appendCriteria(request, sql, dbNameList, typeList);
-			}
-			// sort results
-			else if (request.getParameter("current_query") != null && "to_sort".equals(request.getParameter("go_sort"))) {
-				sql = sortResults(request, sql);
-			}
-			// quick search (done)
-			else if ("Search".equals(request.getParameter("quick_search")) && !"".equals(request.getParameter("query"))) {
-				sql = beginRequest(request, sql);
-				sql = appendCriteria(request, sql, dbNameList, typeList);
-			}
-			// advanced search (done)
-			else if ("Search".equals(request.getParameter("advanced_search")) && (!"".equals(request.getParameter("value1")) || !"".equals(request.getParameter("booleanSelect1")))) {
+			String firstValue = request.getParameter("value1");
+			String firstBooleanValue = request.getParameter("booleanSelect1");
+			if ("Search".equals(request.getParameter("advanced_search")) && (!StringUtils.isAllEmpty(firstValue, firstBooleanValue))) {
 				sql = beginRequest(request, sql);
 				sql = buildAdvancedQuery(request, sql, dbNameList.getFirst());
 			}
-			// custom query TODO: better filter
-			else if ("Send query".equals(request.getParameter("custom_query")) && !"".equals(request.getParameter("query"))) {
-				sql.append(request.getParameter("query"));
-				if (StringUtils.containsIgnoreCase(sql.toString(), "delete") || StringUtils.containsIgnoreCase(sql.toString(), "drop")
-						|| StringUtils.containsIgnoreCase(sql.toString(), "alter") || StringUtils.containsIgnoreCase(sql.toString(), "grant")
-						|| StringUtils.containsIgnoreCase(sql.toString(), "revoke")) {
-					errors.append("Unsupported operation: " + sql.toString());
-				}
-			}
-			// empty input: server-side validation
 			else {
 				errors.append("No input was provided.");
 			}
@@ -150,25 +114,6 @@ public class QueryServlet extends HttpServlet {
 		}
 	}
 	
-	/**
-	 * Mutates @param sql
-	 */
-	private StringBuilder sortResults(final HttpServletRequest request, StringBuilder sql) {
-		String toSort = request.getParameter("current_query");
-		String criteria = request.getParameter("sort_criteria");
-		sql.append(StringUtils.substringBefore(toSort, "ORDER BY"));
-		sql.append(" ORDER BY ");
-		sql.append(criteria);
-		if (request.getParameter("sort_by") == null || "ASC".equals(request.getParameter("sort_by"))) {
-			sql.append(" ASC");
-		}
-		else {
-			sql.append(" DESC");
-		}
-		
-		return sql;
-	}
-	
 	private ResultSet dispatchRequest(Statement searchStatement, StringBuilder sql, StringBuilder messages, StringBuilder errors) throws SQLException {
 		ResultSet resultData = null;
 		resultData = searchStatement.executeQuery(sql.toString());
@@ -181,42 +126,12 @@ public class QueryServlet extends HttpServlet {
 	 * Mutates @param sql
 	 */
 	private StringBuilder beginRequest(final HttpServletRequest request, StringBuilder sql) {
-//		sql.append("SELECT person.* FROM person, person_intern WHERE (person.person_id=person_intern.person_id) AND (");
 		sql.append("SELECT * FROM person WHERE (");
 		
 		String showDeleted = request.getParameter("show_deleted");
 		if (showDeleted == null || !"true".equals(showDeleted)) {
 			sql.append("deleted = false) AND (");
 		}
-		
-		return sql;
-	}
-	
-	/**
-	 * Mutates @param sql
-	 */
-	private StringBuilder appendCriteria(final HttpServletRequest request, StringBuilder sql, LinkedList<String> dbNameList, LinkedList<String> typeList) {
-		String query = request.getParameter("query");
-		query = DBConnection.toPostgreSQLWildcards(query);
-		query = DBConnection.dbQueryEscape(query);
-		
-		int listCount = dbNameList.size();
-		boolean first = true;
-		for (int i = 0; i < listCount; i++)
-		{
-			if (typeList.get(i).matches("character_varying|text|email")) {
-				String dbName = dbNameList.get(i);
-				if (!first) {
-					sql.append(" OR ");
-				}
-				else {
-					first = false;
-				}
-				sql.append(dbName);
-				sql.append(" ILIKE '%").append(query).append("%'");
-			}
-		}
-		sql.append(") ORDER BY " + dbNameList.getFirst());
 		
 		return sql;
 	}

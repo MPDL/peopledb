@@ -11,7 +11,7 @@
 <%@ include file="../WEB-INF/include/db.jsp" %>
 <%
 	// TODO: convert to JSTL, model is in batch edit page
-	// get a list of all available properties
+	// gets a list of all available properties
 	int widgets;
 	if (request.getParameter("more_criteria") == null) {
 		widgets = 1;
@@ -114,7 +114,7 @@ function loadTypeInputs(widgets) {
 		%>
 		<h2>Advanced Search</h2>
 		<div class="jumbotron">
-		<form method="get" action="QueryServlet">
+		<form method="get" action="AdvancedQueryServlet">
 		<div class="form-group">
 		<table>
 		<% for (int widget = 1; widget <= widgets; widget++) { %>

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,6 +20,7 @@ import javax.servlet.jsp.jstl.sql.ResultSupport;
 import org.apache.commons.lang3.StringUtils;
 
 import helpers.DBConnection;
+import helpers.InputValidator;
 
 @WebServlet("/BatchEditResultServlet")
 public class BatchEditResultServlet extends HttpServlet {
@@ -45,6 +47,7 @@ public class BatchEditResultServlet extends HttpServlet {
 		ResultSet resultData = null;
 		LinkedList<String> nameList = new LinkedList<String>();
 		LinkedList<String> dbNameList = new LinkedList<String>();
+		LinkedList<String> required = new LinkedList<String>();
 		Result result = null;
 		
 		try (Connection connection = DBConnection.getConnection()) {
@@ -55,8 +58,10 @@ public class BatchEditResultServlet extends HttpServlet {
 			while (propertySet.next()) {
 				String propertyName = propertySet.getString("name");
 				String propertyDbName = propertySet.getString("db_name");
+				String propertyRequired = propertySet.getString("required");
 				nameList.add(propertyName);
 				dbNameList.add(propertyDbName);
+				required.add(propertyRequired);
 			}
 
 			StringBuilder selectedIDs = new StringBuilder("(");
@@ -78,9 +83,13 @@ public class BatchEditResultServlet extends HttpServlet {
 				String property = StringUtils.split(propertyAndType, '$')[0];
 				String type = StringUtils.split(propertyAndType, '$')[1];
 				String searchTerm = DBConnection.dbEscape(property);
-				String newValue = DBConnection.dbQueryEscape(getBatchEditValue(request, i));
+				String newValue = DBConnection.dbQueryEscape(getBatchEditValue(request, type, i));
 				if (sql.toString().contains(searchTerm)) {
 					errors.append("A property has been specified twice. Please review your inputs.");
+					break;
+				}
+				if (isPropertyRequired(property, dbNameList, required) && isValueEmpty(newValue, type)) {
+					errors.append("Property " + property + " is required, but not specified.");
 					break;
 				}
 				sql.append(searchTerm);
@@ -110,7 +119,7 @@ public class BatchEditResultServlet extends HttpServlet {
 			
 			result = ResultSupport.toResult(resultData);
 		}
-		catch(SQLException | ClassNotFoundException exc) {
+		catch(SQLException | ClassNotFoundException | IllegalArgumentException exc) {
 			errors.append(exc.getMessage());
 		}
 		finally {
@@ -130,13 +139,25 @@ public class BatchEditResultServlet extends HttpServlet {
 		}
 	}
 	
-	private String getBatchEditValue(HttpServletRequest request, int widget) {
-		if (request.getParameter("new_prop" + widget) != null && !"".equals(request.getParameter("new_prop" + widget))) {
+	private String getBatchEditValue(HttpServletRequest request, String type, int widget) {
+		if (!type.equals("boolean") && request.getParameter("new_prop" + widget) != null && !"".equals(request.getParameter("new_prop" + widget))) {
 			return request.getParameter("new_prop" + widget);
 		}
-		if (request.getParameter("booleanSelect" + widget) != null) {
+		if (type.equals("boolean") && request.getParameter("booleanSelect" + widget) != null) {
 			return request.getParameter("booleanSelect" + widget);
 		}
 		throw new IllegalArgumentException("No input was provided for parameter number " + widget + ".");
+	}
+	
+	private boolean isPropertyRequired(String property, final List<String> dbNameList, final List<String> required) {
+		int indexOfProperty = dbNameList.indexOf(property);
+		return InputValidator.isTrue(required.get(indexOfProperty));
+	}
+	
+	private boolean isValueEmpty(String newValue, String type) {
+		if (!type.equals("boolean")) {
+			return "".equals(newValue);
+		}
+		return "NULL".equals(newValue);
 	}
 }

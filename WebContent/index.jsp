@@ -26,7 +26,7 @@
 		<div class="container">
 		<h2>MPDL employees</h2>
 		<div class="jumbotron form-group">
-		<form method="get" action="QueryServlet">
+		<form method="get" action="SimpleQueryServlet">
 			<input class="form-control form-control-inline" type="text" name="query" placeholder="Enter name" required/>
 			<button type="submit" name="quick_search" value="Search" class="btn btn-primary"><i class="fa fa-search"></i>Search</button>
 			<div class="checkbox">
