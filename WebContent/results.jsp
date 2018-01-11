@@ -109,7 +109,7 @@
 					 		<c:forEach items="${nameList}" var="colHead" varStatus="status">
 					 			<th class="text-center" scope="row">
 					 				<div><label for="toExport${status.index}">${colHead}<input type="checkbox" name="toExport" value="${dbNameList[status.index]}" id="toExport${status.index}" class="headerCheckbox" checked/></label></div>
-					 				<div style="font-weight: normal;">${groupList[status.index]}</div>
+					 				<div style="font-size: 80%;">${groupList[status.index]}</div>
 					 			</th>
 					 		</c:forEach>
 					 	</thead> 

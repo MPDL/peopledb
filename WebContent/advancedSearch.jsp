@@ -48,7 +48,7 @@
 function changeInputType(sel, id) {
 	var inputBox = document.getElementById('value' + id);
 	var valueSelect = document.getElementById('booleanSelect' + id);
-	if (sel.value.split('$')[1] == 'boolean') {
+	if (sel.value.split('§')[1] == 'boolean') {
 		inputBox.required = false;
 		inputBox.style.display = 'none';
 		valueSelect.style.display = 'inline';
@@ -59,12 +59,12 @@ function changeInputType(sel, id) {
 		}
 		valueSelect.style.display = 'none';
 		inputBox.style.display = 'inline';
-		if (sel.value.split('$')[1] == 'decimal') {
+		if (sel.value.split('§')[1] == 'decimal') {
 			inputBox.type = 'number';
 			inputBox.step='0.0001';
 		}
 		else {
-			inputBox.type = sel.value.split('$')[1]
+			inputBox.type = sel.value.split('§')[1]
 		}
 	}
 }
@@ -79,7 +79,7 @@ function disableIllegalInputs(compareSel, matchSelID) {
 }
 function disablePartialMatch(typeSel, matchSelID) {
 	var matchSel = document.getElementById('queryMatch' + matchSelID);
-	if (typeSel.value.split('$')[1] == 'character_varying') {
+	if (typeSel.value.split('§')[1] == 'character_varying') {
 		matchSel[1].disabled = false;
 		matchSel[1].style.background = "rgba(255, 255, 255, 0.3)";
 	}
@@ -125,8 +125,8 @@ function loadTypeInputs(widgets) {
 				for (Map.Entry<String, List<Triple<String, String, String>>> entry : propertyMap.entrySet()) { %>
 						<optgroup label="<%= entry.getKey() %>">
 						<% for (Triple<String, String, String> colNames : entry.getValue()) { %>
-								<option name="option<%= widget %>" value="<%= colNames.getLeft() + "$" + colNames.getMiddle() %>"
-								<% if (request.getParameter("property" + widget) != null && request.getParameter("property" + widget).equals(colNames.getLeft()+ "$" + colNames.getMiddle())) { %>
+								<option name="option<%= widget %>" value="<%= colNames.getLeft() + "§" + colNames.getMiddle() %>"
+								<% if (request.getParameter("property" + widget) != null && request.getParameter("property" + widget).equals(colNames.getLeft()+ "§" + colNames.getMiddle())) { %>
 								selected 
 								<% } %>
 								><%= colNames.getRight() %></option>

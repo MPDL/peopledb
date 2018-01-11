@@ -235,8 +235,8 @@ public class QueryServlet extends HttpServlet {
 			if (propertyAndType == null) {
 				break;
 			}
-			String property = StringUtils.split(propertyAndType, '$')[0];
-			String type = StringUtils.split(propertyAndType, '$')[1];
+			String property = StringUtils.split(propertyAndType, '§')[0];
+			String type = StringUtils.split(propertyAndType, '§')[1];
 			String searchTerm = DBConnection.dbEscape(property);
 			String parameterValue = getSearchParameterValue(request, i);
 			// validate input

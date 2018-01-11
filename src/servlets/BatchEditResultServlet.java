@@ -48,6 +48,7 @@ public class BatchEditResultServlet extends HttpServlet {
 		LinkedList<String> nameList = new LinkedList<String>();
 		LinkedList<String> dbNameList = new LinkedList<String>();
 		LinkedList<String> required = new LinkedList<String>();
+		LinkedList<String> groupNameList = new LinkedList<String>();
 		Result result = null;
 		
 		try (Connection connection = DBConnection.getConnection()) {
@@ -59,9 +60,11 @@ public class BatchEditResultServlet extends HttpServlet {
 				String propertyName = propertySet.getString("name");
 				String propertyDbName = propertySet.getString("db_name");
 				String propertyRequired = propertySet.getString("required");
+				String propertyGroupName = propertySet.getString("group_name");
 				nameList.add(propertyName);
 				dbNameList.add(propertyDbName);
 				required.add(propertyRequired);
+				groupNameList.add(propertyGroupName);
 			}
 
 			StringBuilder selectedIDs = new StringBuilder("(");
@@ -80,8 +83,8 @@ public class BatchEditResultServlet extends HttpServlet {
 				if (propertyAndType == null) {
 					break;
 				}
-				String property = StringUtils.split(propertyAndType, '$')[0];
-				String type = StringUtils.split(propertyAndType, '$')[1];
+				String property = StringUtils.split(propertyAndType, '§')[0];
+				String type = StringUtils.split(propertyAndType, '§')[1];
 				String searchTerm = DBConnection.dbEscape(property);
 				String newValue = DBConnection.dbQueryEscape(getBatchEditValue(request, type, i));
 				if (sql.toString().contains(searchTerm)) {
@@ -128,6 +131,7 @@ public class BatchEditResultServlet extends HttpServlet {
 			request.setAttribute("result", result);
 			request.setAttribute("nameList", nameList);
 			request.setAttribute("dbNameList", dbNameList);
+			request.setAttribute("groupList", groupNameList);
 			
 			getServletContext().getRequestDispatcher("/batchEditResult.jsp").forward(request, response);
 			

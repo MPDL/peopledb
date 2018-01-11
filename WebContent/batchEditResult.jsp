@@ -14,7 +14,7 @@
 <link href="css/boxAligner.css" rel="stylesheet">
 </head>
 <body>
-<div class="vertical-center" align="center">
+<div align="center">
 	<%@ include file="../WEB-INF/include/header.jsp" %>
 	<div class="container">
 	<c:choose>
@@ -28,18 +28,21 @@
 		</c:when>
 		<c:otherwise>
 		<h2>Batch Update Results</h2>
-	 	<table class="table-striped table-hover table-responsive"> 
+	 	<table class="table-striped table-hover table-responsive" style="white-space: nowrap;"> 
 	 	<thead>
-	 		<c:forEach items="${nameList}" var="name">
-	 			<th>${name}</th>
+	 		<c:forEach items="${nameList}" var="name" varStatus="status">
+	 			<th class="text-center" scope="row">
+		 			<div>${name}</div>
+		 			<div style="font-size: 80%;">${groupList[status.index]}</div>
+	 			</th>
 	 		</c:forEach>
 	 	</thead> 
 		<c:forEach items="${result.rows}" var="currentRow">
 	 		<tr>
 	 		<c:forEach items="${dbNameList}" var="dbName">
-	 			<td class="col-md-2">${currentRow[dbName]}</td>
+	 			<td style="word-wrap: break-word;">${currentRow[dbName]}</td>
 	 		</c:forEach>
-	 		<td class="col-md-2"><form>
+	 		<td><form>
 	 			<button type="submit" formmethod="get" formaction="EditPersonServlet" class="btn btn-default btn-sm" name="person_id" value="${currentRow.person_id}">Edit</button>
 	 		</form></td>
 	 		</tr>
@@ -49,9 +52,9 @@
 	 		<input type="hidden" name="current_query" value="${current_query}">
 	 		<button type="submit" class="btn btn-default btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i>Back to search results</button>
 	</form>
-	</div>
 	</c:otherwise>
 	</c:choose>
+	</div>
 	</div>
 	<%@ include file="../WEB-INF/include/footer.jsp" %>
 </body>

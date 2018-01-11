@@ -45,7 +45,7 @@ public class ViewAllServlet extends HttpServlet {
 			getPropertyNames(propertySet, nameList, dbNameList, groupNameList);
 			
 			searchStatement = connection.createStatement();
-			String sql = "SELECT * FROM person WHERE (deleted = FALSE) ORDER BY " + dbNameList.getFirst();
+			String sql = "SELECT * FROM person WHERE (deleted = false) ORDER BY " + dbNameList.getFirst();
 			
 			resultData = dispatchRequest(searchStatement, sql, null, errors);
 			result = ResultSupport.toResult(resultData);

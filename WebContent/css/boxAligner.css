@@ -57,8 +57,8 @@ input[type="radio"] {
 }
 
 input[type="text"] {
-	height: 30px;
 	line-height: 30px;
+	height: 30px;
 	font-size: 16px;
 }
 
@@ -126,11 +126,17 @@ th {
 	text-align: center;
 	overflow: hidden;
 	padding: 2em;
+	max-width: 300px;
+	word-wrap: break-word;
+	white-space: normal;
 }
 
 td {
 	overflow: hidden;
-	padding: 2em;
+	padding: 1em;
+	max-width: 300px;
+	word-wrap: break-word;
+	white-space: normal;
 }
 
 /* .table { */

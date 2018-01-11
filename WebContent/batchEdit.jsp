@@ -14,7 +14,7 @@
 function changeInputType(sel, id) {
 	var inputBox = document.getElementById('new_prop' + id);
 	var valueSelect = document.getElementById('booleanSelect' + id);
-	if (sel.value.split('$')[1] == 'boolean') {
+	if (sel.value.split('§')[1] == 'boolean') {
 		inputBox.required = false;
 		inputBox.style.display = 'none';
 		valueSelect.style.display = 'inline';
@@ -25,12 +25,12 @@ function changeInputType(sel, id) {
 		}
 		valueSelect.style.display = 'none';
 		inputBox.style.display = 'inline';
-		if (sel.value.split('$')[1] == 'decimal') {
+		if (sel.value.split('§')[1] == 'decimal') {
 			inputBox.type = 'number';
 			inputBox.step='0.0001';
 		}
 		else {
-			inputBox.type = sel.value.split('$')[1]
+			inputBox.type = sel.value.split('§')[1]
 		}
 	}
 }
@@ -80,7 +80,7 @@ function loadTypeInputs(widgets) {
 							<c:forEach items="${entry.value}" var="colNames">
 								<c:set var = "currentWidget" scope = "session" value = "property${widget}"/>
 								<c:set var = "valueCurrentWidget" scope = "session" value = "${param[currentWidget]}"/>
-								<c:set var = "valueCurrentOption" scope = "session" value = "${colNames.left}$${colNames.middle}"/>
+								<c:set var = "valueCurrentOption" scope = "session" value = "${colNames.left}§${colNames.middle}"/>
 								<c:choose>
 									<c:when test="${valueCurrentWidget eq valueCurrentOption}">	
 										<option value="${valueCurrentOption}" selected>${colNames.right}</option>

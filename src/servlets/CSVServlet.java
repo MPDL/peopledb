@@ -170,8 +170,16 @@ public class CSVServlet extends HttpServlet {
 			while (resultData.next()) {
 				for (int i = 1; i <= columns; i++) {
 					String columnValue = resultData.getString(i);
-					if (columnValue != null)
-						content.append(columnValue);
+					if (columnValue != null) {
+						// formatting standard
+						if (columnValue.contains(",") || columnValue.contains("\r") || columnValue.contains("\"")) {
+							columnValue = columnValue.replaceAll("\"", "\"\"");
+							content.append("\"").append(columnValue).append("\"");
+						}
+						else {
+							content.append(columnValue);
+						}
+					}
 					if (i < columns) {
 						content.append(",");
 					}
