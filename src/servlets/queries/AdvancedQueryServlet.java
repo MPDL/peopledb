@@ -176,7 +176,7 @@ public class AdvancedQueryServlet extends HttpServlet {
 		// TODO patterns and enums
 		// (I)LIKE supported only for type varchar
 		if (type.equals("character_varying") && compareArg.equals("is") && matchArg.equals("matchLike")) {
-			return " ILIKE '%" + parameterValue + "%' ";
+			return " ILIKE '%" + DBConnection.toPostgreSQLWildcards(parameterValue) + "%' ";
 		}
 		else if (type.equals("character_varying") && compareArg.equals("isnot") && matchArg.equals("matchLike")) {
 			return " NOT ILIKE '%" + parameterValue + "%' ";

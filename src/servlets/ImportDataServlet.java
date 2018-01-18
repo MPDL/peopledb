@@ -61,7 +61,10 @@ public class ImportDataServlet extends HttpServlet {
 				for (Part part : parts) {
 					InputStream partInputStream = part.getInputStream();
 					String header = new BufferedReader(new InputStreamReader(partInputStream, "UTF-8")).readLine();
-					newRows += importFileIntoDB(partInputStream, header, errors);
+					
+					// the format dropdown is a Part object itself
+					if (!header.equals("csv"))
+						newRows += importFileIntoDB(partInputStream, header, errors);
 				}
 				
 				messages.append(newRows + " new " + (newRows == 1 ? "row was" : "rows were") + " imported.");

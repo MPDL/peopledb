@@ -36,6 +36,8 @@ public class EmailDispatcherServlet extends HttpServlet {
 		String subject = request.getParameter("subject");
 		String content = request.getParameter("msgBody");
 		
+		// TODO input validation: prevent overly long message body
+		
 		StringBuilder csRecipients = new StringBuilder();
 		for (String email : recipient) {
 			csRecipients.append(email);
