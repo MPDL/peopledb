@@ -1,11 +1,14 @@
 package servlets;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 
 import javax.servlet.ServletContext;
@@ -59,7 +62,9 @@ public class ImportDataServlet extends HttpServlet {
 				
 				long newRows = 0;
 				for (Part part : parts) {
-					InputStream partInputStream = part.getInputStream();
+					InputStream partIS = part.getInputStream();
+					InputStream partInputStream = new BufferedInputStream(partIS);
+					partInputStream.mark(Integer.MAX_VALUE);
 					String header = new BufferedReader(new InputStreamReader(partInputStream, "UTF-8")).readLine();
 					
 					// the format dropdown is a Part object itself
@@ -80,12 +85,15 @@ public class ImportDataServlet extends HttpServlet {
 	
 	private long importFileIntoDB(InputStream inputStream, String header, StringBuilder errors) {
 		Connection connection = null;
-		
 		try {
+			inputStream.reset();
 			connection = DBConnection.getConnection();
 			connection.setAutoCommit(false);
 			CopyManager copyManager = new CopyManager((BaseConnection) connection);
 			long newRows = copyManager.copyIn("COPY person (" + header + ") FROM STDIN WITH (DELIMITER ',', FORMAT CSV, HEADER TRUE);", inputStream);
+			if (newRows != 0) {
+				markAsUndeleted(connection, newRows);
+			}
 			connection.commit();
 			return newRows;
 		}
@@ -99,5 +107,15 @@ public class ImportDataServlet extends HttpServlet {
 			if (connection != null) try { connection.setAutoCommit(true); } catch (SQLException exc) {}
 			if (connection != null) try { connection.close(); } catch (SQLException exc) {}
 		}
+	}
+	
+	/**
+	 * The new entries are not displayed in the view by default; this method makes them visible.
+	 */
+	private void markAsUndeleted(Connection connection, long newRows) throws SQLException {
+		PreparedStatement updateStatement = connection.prepareStatement("UPDATE person SET deleted=FALSE WHERE person_id IN (SELECT (person_id) FROM person ORDER BY person_id DESC LIMIT ?)");
+		updateStatement.setLong(1, newRows);
+		updateStatement.executeUpdate();
+		if (updateStatement != null) try {updateStatement.close();} catch (SQLException exc) {};
 	}
 }

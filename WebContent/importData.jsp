@@ -16,7 +16,7 @@
 	
 	
 	<h2>Import data</h2>
-	<p>Import a file (currently supported: csv). An example file will be provided soon.</p>
+	<p>Import a file (currently supported: csv). Please make sure a header and appropriate IDs are provided. An example file will be provided soon.</p>
 	<form method="post" action="ImportDataServlet" enctype="multipart/form-data">
 	<table>
 	<tr>

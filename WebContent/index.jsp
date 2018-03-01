@@ -24,7 +24,7 @@
 		}
 		%>
 		<div class="container">
-		<h2>MPDL employees</h2>
+		<h2>MPDL people</h2>
 		<div class="jumbotron form-group">
 		<form method="get" action="SimpleQueryServlet">
 			<input class="form-control form-control-inline" type="text" name="query" placeholder="Enter name" required/>
