@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.codehaus.plexus.util.ExceptionUtils;
 
 import helpers.EmailProvider;
+import helpers.PropertyReader;
 
 @WebServlet("/EmailDispatcherServlet")
 public class EmailDispatcherServlet extends HttpServlet {
@@ -31,7 +33,8 @@ public class EmailDispatcherServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String host = System.getProperty("peopleEmailHost");
+		String host = PropertyReader.PROPERTIES.getProperty("people.host");
+		//String host = System.getProperty("peopleEmailHost");
 		String[] recipient = request.getParameterValues("recipients");
 		String subject = request.getParameter("subject");
 		String content = request.getParameter("msgBody");
