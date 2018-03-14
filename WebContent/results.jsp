@@ -58,6 +58,7 @@
 							<tr>
 							<td class="col-lg-1"><label for="sort_criteria">Sort by: </label></td>
 							<td class="col-lg-3"><select name="sort_criteria" class="dropdown form-control">
+								<option value="person_id" selected>ID</option>
 								<c:forEach items="${nameList}" var="colName" varStatus="status">
 									<c:choose>
 										<c:when test="${fn:contains(fn:substringAfter(message, 'ORDER BY'), dbNameList[status.index])}">
@@ -106,6 +107,11 @@
 					 	<table class="table-striped table-hover table-responsive" style="white-space: nowrap;"> 
 					 	<thead> 
 					 		<th class="text-center" scope="row"><label for="selectAll">All<input type="checkbox" id="selectAll" name="selectAll" onclick="selectAllMembers(this);" class="headerCheckbox"/></label></th>
+					 		<!-- adding IDs separately -->
+					 		<th class="text-center" scope="row">
+					 				<div><label for="toExportID">ID</label></div>
+					 		</th>
+					 		<!-- adding IDs separately -->
 					 		<c:forEach items="${nameList}" var="colHead" varStatus="status">
 					 			<th class="text-center" scope="row">
 					 				<div><label for="toExport${status.index}">${colHead}<input type="checkbox" name="toExport" value="${dbNameList[status.index]}" id="toExport${status.index}" class="headerCheckbox" checked/></label></div>
@@ -118,6 +124,9 @@
 						 		<td class="check text-center">
 						 			<input type="checkbox" name="toChoose" value="person${currentRow.person_id}"></input>
 						 		</td>
+						 		<!-- adding IDs separately -->
+						 			<td>${currentRow.person_id}</td>
+						 		<!-- adding IDs separately -->
 					 			<c:forEach items="${dbNameList}" var="colName">
 					 				<td>${currentRow[colName]}</td>
 					 			</c:forEach>
