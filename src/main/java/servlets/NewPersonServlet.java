@@ -5,16 +5,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.SortedMap;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.jstl.sql.Result;
 import javax.servlet.jsp.jstl.sql.ResultSupport;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import helpers.DBConnection;
 import helpers.InputValidator;
@@ -94,7 +85,7 @@ public class NewPersonServlet extends HttpServlet {
 				if (personId == 0) {
 					synchronized (this) {
 						insertStatement = connection.createStatement();
-						insertStatement.executeUpdate("INSERT INTO person (deleted) VALUES (true)");
+						insertStatement.executeUpdate("INSERT INTO person (person_id, deleted) VALUES (((SELECT max(person_id) FROM person) + 1), true)");
 						idStatement = connection.createStatement();
 						idResult = insertStatement.executeQuery("SELECT MAX(person_id) AS person_id FROM person");
 						
@@ -109,8 +100,6 @@ public class NewPersonServlet extends HttpServlet {
 				
 				StringBuilder sql = new StringBuilder();
 				sql.append("UPDATE person SET deleted=FALSE");
-				
-				boolean first = true;
 				
 				for (SortedMap<String, Object> row : propSet.getRows()) {
 					String parameterName = (String) row.get("db_name");
