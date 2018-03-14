@@ -137,13 +137,31 @@ public class SimpleQueryServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Mutates @param sql
+	 * Each word is matched against each attribute; this allows queries of the sort "[given name] [family name]"
 	 */
 	private StringBuilder appendCriteria(final HttpServletRequest request, StringBuilder sql, LinkedList<String> dbNameList, LinkedList<String> typeList) {
 		String query = request.getParameter("query");
 		query = DBConnection.toPostgreSQLWildcards(query);
 		query = DBConnection.dbQueryEscape(query);
+		String[] partialQueries = query.split(" ");
+		boolean first = true;
 		
+		for (String partialQuery : partialQueries) {
+			if (!first) {
+				sql.append(" AND (");
+			}
+			else {
+				first = false;
+			}
+			sql.append(matchPartialQuery(partialQuery, dbNameList, typeList));
+		}
+		
+		sql.append(" ORDER BY " + dbNameList.getFirst());
+		return sql;
+	}
+	
+	private StringBuilder matchPartialQuery(String partialQuery, LinkedList<String> dbNameList, LinkedList<String> typeList) {
+		StringBuilder partialSQL = new StringBuilder();
 		int listCount = dbNameList.size();
 		boolean first = true;
 		for (int i = 0; i < listCount; i++)
@@ -151,17 +169,17 @@ public class SimpleQueryServlet extends HttpServlet {
 			if (typeList.get(i).matches("character_varying|text|email")) {
 				String dbName = dbNameList.get(i);
 				if (!first) {
-					sql.append(" OR ");
+					partialSQL.append(" OR ");
 				}
 				else {
 					first = false;
 				}
-				sql.append(dbName);
-				sql.append(" ILIKE '%").append(query).append("%'");
+				partialSQL.append(dbName);
+				partialSQL.append(" ILIKE '%").append(partialQuery).append("%'");
 			}
 		}
-		sql.append(") ORDER BY " + dbNameList.getFirst());
+		partialSQL.append(")");
 		
-		return sql;
+		return partialSQL;
 	}
 }
