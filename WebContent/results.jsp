@@ -93,17 +93,17 @@
 						</div>
 						</form>
 						</div>
+						
 						<c:choose>
 							<c:when test="${fn:length(resultData.rows) eq 1}">
 								<label>${fn:length(resultData.rows)} member</label>
 							</c:when>
 							<c:otherwise>
-								<label style="float: left;">${fn:length(resultData.rows)} members</label>
+								<label>${fn:length(resultData.rows)} members</label>
 							</c:otherwise>
 						</c:choose>
 						<div class="smallContainer">
 						<form method="get" action="EmailListServlet">
-						
 					 	<table class="table-striped table-hover table-responsive" style="white-space: nowrap;"> 
 					 	<thead> 
 					 		<th class="text-center" scope="row"><label for="selectAll">All<input type="checkbox" id="selectAll" name="selectAll" onclick="selectAllMembers(this);" class="headerCheckbox"/></label></th>
