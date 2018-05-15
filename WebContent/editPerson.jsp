@@ -29,7 +29,7 @@
 			<c:otherwise>
 			<h2>Edit person</h2>
 			<div>
-			<form style="display: inline-block;" method="post" action="QueryServlet">
+			<form style="display: inline-block;" method="post" action="RefreshedQueryServlet">
 				<input name="current_query" type="hidden" value="${current_query}"/>
 				<c:choose>
 					<c:when test="${not empty current_query}">
